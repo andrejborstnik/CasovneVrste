@@ -223,6 +223,290 @@ $g: R^\N \rightarrow \R$ such that $X = G(Y_{\alpha_1}, \dots)$
 
 Since $E(X|Y) \in \sigma(Y) \Rightarrow E(X|Y) = g(Y)$ for some $g$. It makes sense to write $E(X | Y = y)$. 
 
+\subsection{Linear Predictors}
+
+Assume: $(X_t)$ is weakly stationary with mean $0$. 
+
+\begin{defn}
+{\bf The best  linear predictor} for $X_{n+1}$ in terms of $X_q, \dots, X_n$ is the linear combination 
+$$Z = \varphi_1 X_n + \dots + \varphi_n X_1$$
+such that $E(Z - X_{n+1})^2 = \inf_{y \in 
+% \span
+span(X_1, \dots, X_n)} E(X_{n+1} -Y)^2$
+\end{defn}
+
+Notice that $span(\dots)$ is a closed subset of $L_2(\Omega, F, P)$. The projection theorem implies such a $Z$ exists and is unique! 
+
+We denote $M_n = span(X_1, \dots, X_n)$ and $\Pi_n = \Pi_{M_n}$ i.e. $\Pi_nX_{n+1} = \varphi_1 X_n + \dots + \varphi_n X_1 = Z$. 
+
+\begin{observation}
+One should write $\varphi_{n 1}, \dots, \varphi_{n n}$.
+\end{observation}
+
+The projection theorem implies $Z \in M_n, X_{n+1} - Z \perp M_n$. This is equivalant to
+$Z \in M_n, <X_{i+1} - Z, X_i> = 0, i = 1, \dots, n$ and that is equal to
+$Z \in M_n, <X_{n+1}, X_i> = <Z, X_i>,  i = 1, \dots, n$
+$ = <\varphi_1 X_n+ \dots, X_i> = \varphi_1 <X_n, X_i> + \dots$.
+
+but $<X_j, X_i> = E X_j X_i = Cov(X_j, X_i) = \gamma_X(j-i)$, which is equivalant to
+$Z \in M_n, \gamma_X(n + 1 -i) = \varphi_1 \gamma(n - i) + \dots, i = 1, \dots, n$, which is just a linear system of equations:
+
+% todo vstavi matriko
+% Gamma_n * vector (varphi 1:n) = 
+% gamma(0) gamma(1 ) ...
+% gamma(1) ...
+% ...
+
+% * vector varphi 1:n
+% = vector gamma 1:n
+
+This system has a solution by projection theorem. But not necesarrily unique unless $\Gamma_n$ is regular, which is equivelant to beign positive definite. 
+
+The prediction error equals $E(X_{n+1} - Z)^2 = E(X_{n+1 } - \Pi_n X_{n+1})$.
+
+Observe:
+$||X_{n+1}||^2  = <X_{n+1} - \Pi_n X_{n+1} + \Pi_n X_{n+1}, X_{n+1} - \Pi_n X_{n+1} + \Pi_n X_{n+1}> = $
+(orthogonal parts)
+$= ||X_{n+1} - \Pi_n X_{n+1}||^2 + ||\Pi_n X_{n+1}||^2$ (basically pitagoras theorem for $L_2$).
+
+The error is therefore:
+$E(X_{n+1} - \Pi_n X_{n+1})^2 = E(X_{n+1})^2 - E(\Pi_n X_{n+1})^2 =$
+$= \gamma_X(0) - <\varphi_1 X_n \dots, \varphi_1 X_n \dots> =$
+$=\gamma_X(0) - \sum_{i, j} \varphi_i \varphi_j \gamma(i-j) = $
+$ = \gamma_X(0) - <vector(\varphi i=1:n), \Gamma_n vector(\varphi 1:n)> = $
+$= \gamma_X(0) - <vector(\varphi i=1:n),  vector(\gamma 1:n)> $
+
+\begin{excercise}
+Show that the prediction error for $X_{n+h}, h \geq 2$ equals 
+$E(X_{n+h}- \Pi_nX_{n+1})^2 = \gamma(0) - <vector(\alpha 1:n), vector(\gamma h:n+h-1)>$,
+where $\Pi_n X_{n+h} = \alpha_1 X_n + \dots + \alpha_n X_1$,
+which satisfy 
+$\Gamma_n vector(\alpha 1:n) = vector(\gamma h_n+h-1)$
+\end{excercise}
+
+\begin{example} (AR(1) process)
+For $(Z_t) \tilde WN(0, \sigma^2)$ suppose a static??? sequence $(X_t)$ satisfies
+$X_t = \varphi X_{t-1}, t\in \Z, |\varphi| < 1$, then
+$X_t = \sum_{i = 0}^\infty \varphi^i Z_t$ and
+$Z_{n+1} \perp X_j, j=1,\dots,n$ (because $Z_{n+1} \perp Z_j, j\leq n$ and the scalar product is continous).
+
+$\Pi_n X_{n+1} = \Pi_n(\varphi X_n) + \Pi_n(Z_{n+1}) = \varphi X_n + 0$ ($Z_{n+1}$ is orthogonal to prevoius guys, so projection is $0$). (*)
+\end{example}
+
+\begin{excercise}
+Show in the (AR(1)) example that 
+$\Pi_n X_{n+h} = \varphi^h x_n, h \geq 1$. The prediction error in AR(1) example:
+$E(X_{n+h} - \varphi X_n)^2 = E(Z_{n+1})^2 = \sigma ^2$.
+(*) is not true if $|\varphi| > 1$.
+\end{excercise}
+
+\begin{example} (periodic process)
+$X_t = A_1 \cos{vt} + A_2 \sin{vt}$, $Var A_1 = Var A_2, EA_1 = EA_2 = 0, Cov(A_1, A_2) = 0$.
+Then 
+$\Pi_n X_{n+1} = w \cos{v} X_n - X_{n-1} $. Moreover $\gamma^2 = \sigma^2 \cos{vh}$. 
+$E(X_{n+h} - Pi_nX_{n+1})^2 = \sigma^2 - <vector(2 \cos{v}, -1, 0, \dots), vector(\sigma^2\cos{v}, \dots, \sigma^2 \cos{n v})> = $
+%todo tune n+h v prvem E??
+$= \sigma^2 - (2 \sigma^2 \cos^2{v} - \sigma^2 \cos{2v}) = 0$.
+
+Here $\varphi-$s are not unique! 
+\end{example}
+
+The problem is that in practise we do not know $\gamma-$s, which we used in the examples.
+
+\subsubsection{Case of non-zero expectations}
+
+Assume $(X_t)$ weakly stationary, $E X_t = \mu$.
+$M_n' = span(1, X_1, \dots, X_n)$
+
+The best linear predictor of $X_{n+1}$ in terms of $1, X_1, \dots, X_n$ is hte projection of $X_{n+1}$ on $M_n'$.
+
+If $\mu = 0 = E X_t$ then $\Pi_{M_n'}X_{n+h} = \Pi_n X_{n+h}$
+
+Assume $Y_1, \dots, Y_n \in L_2$ and $EY_1 = \dots = EY_n = 0$. It follows that $Y \perp 1, i = 1, \dots, n$.  Then the 
+$span(1, Y_1, \dots, Y_n) = span(1) \oplus span(Y_1, \dots, Y_n)$.
+
+If $E X_t = \mu$, we can work with $X_t - \mu$. $\Pi_{M_n'}(\mu + X_{n+1} - \mu) = \mu + \Pi_{span(X_1 - \mu, \dots)}(X_{n+1}- \mu)$.
+($M_n' = span(1) \oplus span(X_1 - \mu, \dots)$)
+
+Now we have a weakly stationary series of mean $0$, so we know how to do it, if we estimate $\mu$. 
+
+\begin{observation}
+If we have a stationary sequence with mean $\neq 0$ we can:
+\begin{enumerate}
+\item substract the mean to get $Y_t = X_t - \mu$
+\item predict $Y_{n+h}$ in terms of $Y_i$
+\item add $\mu$ back to get the prediction for $X_{n+h}$
+\end{enumerate}
+\end{observation}
+
+\subsection{Non-linear prediction}
+
+\begin{defn}
+{\bf The best predictor} for $X_{n+1}$ in terms of $X_1, \dots, X_n$ is a random variable $f_n(X_i)$, which minimizes 
+$E(X_{n+1}- F_n(X_i))^2$ in the class of all measureable functions $f_n: \R^n \rightarrow \R$. 
+\end{defn}
+
+In $L_2(\Omega, F, P)$ space by definition one of conditional expectaion the best predictor is
+$E(X_{n+1} | X_1, \dots, X_n)$ or $E(W | X_1, \dots, X_n)$ if we want to predict $W$. 
+
+\begin{example} (ARCH(1))
+Suppose $0< \alpha_1 < 1$. The ARCH(1) equation has a causal stationary solution in the sense:
+there exists a stationary process $X_t = \sigma_t Z_t, Z_t \tilde IID(0,1)$ and $\sigma_t^2 = \alpha_0 + \alpha_1 X_{t-1}^2$. 
+
+Then $E(X_{n+1} | X_1, \dots, X_n) = 0$. Even $E(X | X_j, j =-\infty, \dots, n) = 0$.
+
+$E(X_{n+1} | X_1, \dots, X_n) = E(E(X_{n+1}|\sigma_j, X_j, j = -\infty, \dots, n)|X_1, \dots, X_n) = $
+
+$=  E(E(\sigma_{n+1} Z_{n+1}|\sigma_j, X_j, j = -\infty, \dots, n)|X_1, \dots, X_n) = $
+
+$=  E(\sigma_{n+1} E(Z_{n+1}|\sigma_j, X_j, j = -\infty, \dots, n)|X_1, \dots, X_n) $ (because $Z_{j+1}$ is independant of the others the best we can predict is the avarage, which is $0$).
+
+$ = E(\sigma_{n+1} 0) = 0$.
+\end{example}
+
+\begin{example} (AR(1))
+Suppose $|\varphi| < 1, Z_t \tilde IID(0,1) X_t = \varphi X_{t-1} + Z_t, t\in \Z$ and $X_t = \sum_{j = 0}^\infty \varphi^j Z_{t-j}$.
+
+$E(X_{n+1}|X_i) = \varphi X_n + E(Z_{n+1} | X_i) = \varphi X_n$.
+
+It follows that the best predictor is the best linear predictor.
+\end{example}
+
+\subsection{Partial autocorrelation function}
+
+Assume $(X_t)$ is weakly stationary, mean $0$.
+$\Pi_{(2, \dots, n)} = \Pi_{span(X_2, \dots, X_n)}$.
+
+Define $\alpha(1) = Corr(X_2, X_1) = q(1)$,
+
+ $\alpha(h) = Corr(X_{h+1} - \Pi_{2, \dots, h} X_{n+h}, X_1 - \Pi_{(2, \dots, h)}X_{n+1})$
+
+(we substract other variables to see if the variables are really causal and not just correlated).
+
+Function $\alpha_X = \alpha: \N \rightarrow [-1,1]$ given above is called the {\bf partial autocorrelation function} of the sequance $(X_t)$. We call it {\bf pacf}.
+
+If $E(X_t )= \mu$ we define $pacf(X_t) = pacf(X_t - \mu)$.
+
+\begin{example} (AR(1))
+Assume that $(X_t)$ is a stationary process with mean $0$ and satisfies $X_t = \sum_j \varphi^j Z_{t-j}$ and 
+$X_t = \varphi X_{t-1} + Z_t$.
+
+Then $\alpha(1) = Corr(X_2, X_1) = Corr(\varphi X_1 + Z_2, X_1) = \varphi$.
+
+$h \geq 2$:
+
+$\Pi_{(2,\dots,n)}X_{n+1} = \varphi X_n$.
+But here $\alpha_X(h) = Corr(X_{n+1} - \varphi X_n, X_1 - \Pi_{(2, \dots,h)}X_1) = $
+
+ $ =  Corr(Z_{n+1}, X_1 - \Pi_{(2, \dots,h)}X_1) = 0$  (because $Z_{n+1} is orthogonal on span(X_1, \dots, X_n)$, which is the right part. Also the scalar product is continous).
+
+
+\begin{lema}
+Assume $(X_t)$ is weakly stationary with mean $0$., satisfying the following (mild) conditions: $\gamma(0) > 0$ and $\gamma(h) \rightarrow 0$ for $h \rightarrow  +- \infty$. 
+
+$\Pi_h X_{h+1} = \varphi_{h,1} X_h + \dots + \varphi_{h,h} + X_1$ is the best linear predictor for $X_{h+1}$ in terms of $X_1, \dots, X_h$. Then
+$\alpha_X(h) = \varphi_{h,h}$. 
+\end{lema}
+
+Let us continue the example. 
+
+The best linear predictor is in this example 
+$\Pi_h X_{h+1} = \varphi X_h$ $(h\geq 2)$.
+
+The lemma now 
+% ref
+implies $\alpha_X(1) = \varphi, \alpha_X(h) = 0$ $(h \geq 2)$.
+\end{example}
+
+
+
+
+This is important because of duality:
+
+\begin{example} (MA(1))
+Assume $Z_t \tilde WN(0, \sigma^2), X_t = Z_t + v Z_{t-1}$.
+$\rho_X(h) = \frac{v}{1+v^2}$ if $h = 1$, else $0$.
+
+We can see this in the autocorrelation plot. In practise we estimate it and if they are close to $0$ and can conclude we have MA(1). 
+\end{example}
+
+\begin{lema}
+Assume $(X_t)$ weakly stationary, mean $0$ such that $\gamma(0) > 0$ and $\gamma(h) \rightarrow 0$, $h \rightarrow \infty$ then $\Gamma_n$ is regular for every $n \in \N$. 
+\end{lema}
+
+Regularity ensures there is only one solution in the previous lemma. Meaning $\varphi_{n,1}, \dots, \varphi_{n,n}$ are unique. 
+
+
+\subsection{Spectral representation of time series}
+
+Assume $(X_t)$ is a $\C$ valued time series.
+$X_t = X_t^1 + i X_t^2$
+
+$EX_t = EX_t^1 + i EX_t^2, \gamma(h) = Cov(X_{t+h}, X_t) = E((X_{t+h} - \mu)\overline{(X_t - \mu)})$.
+
+Assume $(X_t)$ are stationary. $\gamma: \Z \rightarrow \C$. $\gamma$ is hermitian, $\gamma(h) = \overline{\gamma(-h)}$. $|\gamma(h)| \leq \gamma(0) \in [0, \infty)$. $\gamma(h)$ is positive semidefinite i.e.
+$\sum_{i,j = 1}^n \alpha_i \gamma(i-j)\overline{\alpha_j} \geq 0$.
+
+\begin{observation}
+$\gamma$ is an autocovariance function iff these properties hold (the first two).
+$X_t^2$ identically equals $0$, nmakes $\R$ values time series special case. 
+\end{observation}
+
+\begin{theorem} (Hergoltz)
+Function $(\gamma(h))_{h \i n\Z}$ is positive semidefinite hermifian $\Leftrightarrow$ there exists a finite measure $\nu$ on $(-\pi, \pi]$ such that $$\gamma(h) = \int_{(-\pi,\pi]} e^{i h u}\nu du.$$ 
+Such a $\nu$ is unique.
+\end{theorem}
+
+Observe $\nu$ has its own distribution function $F : (-\pi, \pi] \rightarrow \R_+$, $F(x) := \nu((-\pi,\pi])$. 
+
+% slika distribucije. Ima končno mnogo skokov, ker je mera končna. ne rabi končat pri 1. 
+
+If $\nu$ is absolutely continous with respect to Lebesgue measure, than there exists a {\bf spectral density} $f_X$, such that $\nu(-\pi, x] = \int_{(-\pi,x]}f_X(x) dt$. Then $\gamma(h) = \int_{-\pi}^\pi e^{i h u}f_X(u) du$, $ h = 1,2, \dots$. 
+
+\begin{theorem} (about spectral density)
+Assume $(X_t)$ is weakly stationary such that $\sum_{h =-\infty }^\infty|\gamma(h)| < \infty$. Then $\nu$ has spectral density. Moreover $f_X(\nu) = \frac{1}{2 \pi} \sum_{h = -\infty}^\infty\gamma(h) e^{-ihu}$,
+$ u\in (-\pi, \pi]$ (inverse fourier transform). Note that $f_X(\nu) \in [0, \infty)$. 
+\end{theorem}
+We call such time series short range dependant time series. 
+
+Variance of the series if nothing but the integral of the spectral density: $\gamma(0) = \int_{-\pi}^\pi f_X(u)du$.
+
+\begin{example}
+\begin{enumerate}
+\item $Z_t \tilde WN(0, \sigma^2), \gamma_Z(h) = \sigma^2$ if $h = 0$, else $0$. One can directly show the spectral density exists. $f_Z(h) = \frac{\sigma^2}{2 \pi}$, which is a uniform density. 
+
+White noise contains all frequencies $u \in (-\pi, \pi]$ with same intensity! 
+\item $X_t = A e^{i t u}$. $E A^2 = \sigma^2$. Direct calculation shows $\nu = \sigma^2 \delta_u$ (Dirac measure). The period = $2 \pi / u$, where $u$ is the only frequency. 
+\end{enumerate}
+\vskip0.5cm
+
+If $(X_t)$ and $(Y_t)$ are uncorrelated than  $(X_t + Y_t)$ has the spectral measure $\nu = \nu_X + \nu_Y$. The same holds for their spectral density functions if they exist. 
+
+Assume $(X_t)$ is weakly stationary, $\sum_{j=-\infty}^\infty |h_j| < \infty \Rightarrow Y_t = \sum_j h_j X_{t-j}$ is well defined and weakly stationary. We can define the response function $A(e^{-iu}) = \sum_j h_j e^{-uij}$.
+
+If $(X_t)$ has the spectral density $f_X$ then $(Y_t)$ has the spectral density $f_Y(u) = |A(e^{-iu})|^2 f_X(u)$. 
+
+\begin{theorem} (Cramer)
+Assume $(X_t)$is weakly stationary with mean $0$. Then there exists a random preocess $(Z(u))_{u \in(-\pi, \pi]}$ with orthogonal increments (similar to independent in Browniam motion) and values in $\C$. 
+$$ X(t) = \int_{-\pi}^\pi e^{itn}dZ(u)$$
+Moreover $Var(Z(u_2) - Z(u_1)) = \nu(u_1, u_2], u_1, u_2 \in (-\pi,\pi]$.
+
+This is a stohastic integral:
+$\int_a^bdZ(u) = Z(b) - Z(a)$.
+\end{theorem}
+
+Continue example.
+$Z(w) = 0$ if $w < n$, else $A$. 
+
+$Var(Z(u_2) - Z(u_1)) = \sigma^2 \delta_u(u_1, u_2]$.
+
+The natural estimator for $f_X$ is defined by $w_j = \frac{2 \pi j}{n} \in (-\pi, \pi]$.
+$$\hat{f}_X(w_j) =\frac{1}{2\pi} I(w_j)= \frac{1}{2\pi} \sum_{|k| < n} \sqrt{\hat{\gamma}(k)e^{-ikw_j}}.$$
+
+This is not a consistent estimator. To make it more consistent we smooth it. 
+
+This is a {\bf periodogram}. We try to look at the time of time series. But we could look at frequencies (engeneers do it a lot). And it is the same (dual). 
+\end{example}
 
 
 
