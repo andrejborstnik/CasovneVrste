@@ -1,0 +1,550 @@
+\documentclass[12pt,a4paper]{amsart}
+% ukazi za delo s slovenscino -- izberi kodiranje, ki ti ustreza
+\usepackage[slovene]{babel}
+%\usepackage[cp12500]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+\usepackage{graphicx}
+\graphicspath{{./Slike/}}
+%\usepackage[normalem]{ulem}
+\usepackage[dvipsnames,usenames]{color}
+
+\setlength{\evensidemargin}{-0mm}
+\setlength{\oddsidemargin}{-0mm}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\textheight}{260mm}
+\setlength{\textwidth}{160mm}
+\setlength{\footskip}{10mm}
+\setlength{\topmargin}{-10mm}
+
+\textwidth 15cm
+\textheight 24cm
+\oddsidemargin.5cm
+\evensidemargin.5cm
+\topmargin-5mm
+\addtolength{\footskip}{10pt}
+\pagestyle{plain}
+\overfullrule=15pt % oznaci predlogo vrstico
+\setlength{\parindent}{0pt}
+
+
+% ukazi za matematicna okolja
+\theoremstyle{definition} % tekst napisan pokoncno
+\newtheorem{defn}{Definition}[section]
+\newtheorem{example}[defn]{Example}
+\newtheorem{excercise}[defn]{excercise}
+\newtheorem{observation}[defn]{Observation}
+
+\theoremstyle{plain} % tekst napisan posevno
+\newtheorem{lema}[defn]{Lema}
+\newtheorem{theorem}[defn]{Theorem}
+\newtheorem{claim}[defn]{Claim}
+\newtheorem{collary}[defn]{Collary}
+
+
+% za stevilske mnozice uporabi naslednje simbole
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\C}{\mathbb C}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\F}{\mathbb F}
+
+
+\begin{document}
+
+{\bf \huge Time series}
+
+\vskip1cm
+
+{\bf Predavatelj : } Bojan Basrak
+
+% https://web.math.pmf.unizg.hr/~bbasrak/
+% www.math.hr/~bbasrak
+% {\bf www: } https://web.math.pmf.unizg.hr/$\tilde$bbasrak/
+
+
+\section{Basic models and terminology}
+
+Stohastic process $(X_i)_{i \in I}$ on the same probability sapace.
+
+Time series is a sequence of observation, collected over time - prices of stock, level of the sea, ... $ =  (x_i)_{i = 1, \dots, n}$
+Ideally at equidestant time points. 
+
+It is also a stohastic procces indexed in discrete time, i.e.  $I = \{1, \dots, n\}, \N, \Z$ (model). Typically $I \subset \Z$.
+We will be looking at final dimentional distributions of $(X_t)_{t \in \Z}$: family of distributions of a random vector
+$(X_{t_1}, \dots, X_{t_k})$, $t_1 < \dots < t_k$.
+They determine the distribution of the whole process $(X_t)_{t \in \Z}$.
+$(X_t)_{t \in \Z}: \omega \rightarrow \R^{\Z} $.
+
+Examples:
+
+\begin{itemize}
+\item $X_i \tilde (i.i.d.) F$ -> $(X_i)$ is a time series (model). But is independant of time -> bad
+\item $X_i \tilde F$, $S_0 = 0$, random walk $S_n = S_{n - 1} + X_n, n\geq 1$. Not interesting, because the model is changing constantly. 
+\end{itemize}
+
+\begin{defn}
+For a time series $(X_t){t\in \Z}$, satisfying $Var(X_t) < <\infty$ we define {\bf the autocovarinace function} $\gamma_X : \Z \times\Z \rightarrow  \R$
+$\gamma_X(s,y) = Cov(X_s, X_t) = E[(X_s - EX_s)(X_t - EX_t)]$
+\end{defn}
+
+\begin{defn}
+Time series $(X_t)_t$ is weakly stationary (če nič ne rečemo je stationary = weakly stationary) if 
+\begin{itemize}
+\item $E|X_t|^2 < \infty$, for all $t$
+\item $EX_t = m$ (const), for all $t$
+\item $Cov(X_s, X_t) = Cov(X_{s+h},X_{t+h})$, $h, s, t \in \Z$
+\end{itemize}
+Covariance represents dependance of the variables. 
+\end{defn}
+
+\begin{observation}
+For weakly stationary time series the function $\gamma_X$ is actually a function of one variable only. 
+$\gamma_X : \Z \rightarrow \R$,
+$\gamma_X(h) = Cov(X_h, X_0)$.
+
+This is a good definition, because $Cov(X_s, X_t) = Cov(X_{s-t},X_0) = \gamma_X(s-t)$. 
+\end{observation}
+
+
+\begin{defn}
+The autocorrelation function of weakly stationary time series $(X_t)$ is a function
+$\gamma_X : \Z \rightarrow [-1, 1]$
+$\rho_X(h) = \frac{\gamma_X(h)}{\gamma_X(0)} = Corr(X_{t+h},X_t)$
+(we assume $\gamma_X(0) > 0$). If it is $0$ everything is a constant and we have no interest in observing it.
+\end{defn}
+
+\begin{defn}
+Time series $(X_t)$ is strictly (strongly) stationary if the distribution of a random vector $(X_{t_1 + h}, \dots X_{t_k + h})$ does not depend on $h$ for every $k\in \N, t_1, \dots, t_k$.
+\end{defn}
+
+\begin{excercise}
+Strict stationarity + $EX^2 < \infty$ -> weak stationarity.
+\end{excercise}
+
+For a given time series we define a family 
+$\{  F_{\bf t} \}_{\bf t \in T}$, where $T = \{(t_1, \dots, t_k), t_1 < \dots < t_k, k \in \N\}$.
+$F_{\bf t}({\bf X}) = P(X_t \leq X-1, \dots, X_{t_k \leq x_k}), {\bf x} = (x_1 \dots, x_k), {\bf t} = (t_1, \dots t_k)$
+$F_{ \bf t}$ determines the distribution of the time series
+
+
+\begin{theorem}
+The family $\{F_{\bf t}\}_{\bf t \in T}$ is a class of f.d.d (final dimention distribution) function of a time series
+$\Leftrightarrow$
+for each $k, {\bf t } \in T: \lim_{x_i \rightarrow \infty} F_{\bf t}({\bf x}) = F_{\bf t(i)}({\bf x(i)})$
+for every ${\bf x(i)} \in R^{k-1} = (x_1,\dots,x_{k-1},x_{k+1},\dots, x_k)$ and the same for ${\bf t}$ .
+\end{theorem}
+\proof
+No proof, very tehnical. 
+$\rightarrow$ is very easy to prove. Ti is enough to observe the probability is continous with respect to groving events.
+\endproof
+
+
+
+\begin{defn}
+Random vector ${\bf Y } = (Y_1, \dots, Y_k)^T$ has a multivariate normal (gaussian) distribution if there exists a vector $a \in \R^k$ and a matrix $B \in M_{k\times m}$ and a random vector ${\bf X} = (X_1, \dots, X_m)^T$ such that $X_i \tilde(iid) N(0,1)$, such that ${\bf Y} = a + B {\bf X}$.
+
+In this case we know that $E{\bf Y} = (EY_1, \dots, EY_k)^T = (a_1, \dots, a_k)$ and the covariance matrix of ${\bf Y}$ is given by $\sum_y = B B^T$.
+We write $Y \tilde N(a, \sum_y)$.
+
+\end{defn}
+
+% todo popravi
+If $det (\sum_y) > 0$, ${\bf Y}$ has density and $f_{\bf Y}(y) = (2 \pi)^{-k/2}\frac{1}{\sqrt{det(\sum_y)}} e^{-1/2<{\bf Y} - a, \sum^{-1}({\bf y} - a)>}$.
+
+\begin{defn}
+A random proces $(X_t)_t$ is gaussian (normal) if its f.d.d.-s are all multivariate normal.
+\end{defn} 
+
+
+\begin{excercise}
+Assume $(X_t)_t$ is a gaussian time series with constant expectation. Then the autocovariance function $\gamma_X$ determines all f.d.d-s.
+
+If we look at the vector $(X_, \dots)$ we see it is distributed normally. We can read the covariance matrix form $\gamma_X$, and this is all we need to show.
+\end{excercise}
+
+\begin{excercise}
+Assume $(X_t)_t$ is a gaussian time series and weakly stationary. Then it is strictly stationry as well. 
+\end{excercise}
+
+
+\begin{example}
+A weakly stationary time series $(X_t)$ is called {\bf white noise } if $EX_t = 0$ for all $t$ and 
+$$\gamma_X(h) =  \sigma^2 = Var(X_t) ,h = 0
+			0, h \neq 0
+$$
+We write $(X_t) \tilde WN(0, \sigma^2)$.
+
+Clearly if $(X_t)$ i.i.d. and $EX_t = 0$ and $Var X_t < \infty \Rightarrow (X_t) \tilde WN(0, \sigma^2)$.  
+\end{example}
+
+
+\begin{excercise}
+Find an example of a strictly statinary white noise, which is not an i.i.d. sequence.
+
+Imagine $Y \tilde (-2 -1 1 2; 1/4 1/4 1/4 1/4)$, $\epsilon_t \tilde iid (-1 1; 1/2 1/2)$. $X_t = Y \epsilon_t$. We calculate $\gamma_X$. It is equal to $Cov(X_h, X_0) = E(X_h X_0) = E(\epsilon_h \epsilon_0 Y^2) = 0$.
+\end{excercise}
+
+\begin{observation}
+We will ise $(X_t) \tilde IID(0, \sigma^2)$
+\end{observation}
+
+\begin{excercise}
+Find an example of white noise, which is not even strictly stationary.
+\end{excercise}
+
+\begin{example} (random walk)
+Assume $(X_t) \tilde IID(\mu, \sigma^2)$, $X_0$ is independent of $(X_t)_{t \geq 1}$ and $Var(X_0) < \infty$.
+$X_= = X_0$, $S_n = X_0 + \dots + X_n$ then $(S_n)$ cannot be weakly stationary, unless $\mu = \sigma = 0$.
+Clearly if $\mu \neq 0$ then $ES_n = EX_0 + n\mu$ is changing!
+If $\mu = 0$ and $\sigma^2 > 0$, then $\gamma_S(h,h) = Cov(S_h, S_h) = Var(S_h) = VarX_0 + n\sigma^2$, which is growing. So we cannot have a statinary random walk.
+\end{example}
+
+\begin{observation}
+Definition of stationarity (weak and strong) and functions $\gamma_X, \rho_X$ can be extended to one-sided time sreies $(X_t)_ {t\geq 0}$. 
+\end{observation}
+
+
+\begin{example}
+Assume $A_1, A_2$ are uncorrelated random variables with expectation $0$ and equal variance $\sigma^2$. Then the time series $X_t = A_1 \cos{\nu t} +A_2 \sin{\nu t}$. $\nu > 0$.
+is $w\pi / \nu$ periodic and weakly stationary.
+Obviously $EX_t = 0$ and $EX_t^2 < \infty$.
+$Cov(X_{t+h}, X_t) = Cov(\dots) = E A_1^2 \cos{\nu t}\cos{t + h} + EA_2^2 \sin{\nu(t + h)}\sin{\nu t} = $
+$\sigma^2 \cos(\nu (t + h) - \nu t)$ = $\sigma^2 \nu h$.
+There is no $t$ here. So $X_t$ is stationary. 
+
+Just by looking at the sample we cannot know if it is randomly generated. We also do not know if it is stationary (it is $\sin$).
+But it is. So it is difficult to analyise in practise.
+\end{example}
+
+
+\begin{excercise}
+Assume $A, \theta$ are independant random variables. $Var(A) < \infty$ and $\theta Unif[0,2\pi]$, $\nu > 0$ then the time series
+$X_t = A \cos{\nu t + \theta}$ is weakly stationary. 
+
+Solution:
+You write the $\cos$ using the trigonometric formula and notice it is the same as in the previous example for 
+$A_1 = A\cos{\theta}$ and $A_2 = A\sin{\theta}$.
+\end{excercise}
+
+\begin{example} (MA(1))
+Assume $(Z_t) \tilde WN(0, \sigma^2), v \in \R$
+and $X_t = Z_t + vZ_{t-1}, t \in \Z$.
+Process $(X_t)$ is called {\bf moving average of order one} $= MA(1)$ .
+
+Its expectation is clearly $0$. It is also a weakly stationary time series (strongly if $Z_t$ is strongly stationary):
+$\gamma_X(h) = Cov(X_{t + h}, X_t) = Cov(Z_{t+h} + vZ_{t+h-1}, Z_t + vZ_{t-1}) = 
+=  \sigma^2(1 + v^2)   , h = 0
+	v \sigma^2	 , h = +-1
+		0	, otherwise
+$
+This celarly does not depend on $t$, so $(X_t)$ is weakly stationary. We also observe that $\gamma_X(h) = 0$ for all $|h| \geq 2$. We say that $(X_t)$ has {\bf short memory}.
+
+\end{example}
+
+\begin{observation}
+Time series theory makes a distinction between:
+\begin{itemize}
+\item short range dependent models (like MA(1))
+\item long range dependent models
+\end{itemize}
+\end{observation}
+
+
+\begin{example} (AR(1))
+Assume $(Z_t) \tilde WN(0, \sigma^2)$, $\phi \in \R$ and that $(X_t)$ satisfies 
+$$X_t = \phi X_{t-1} +Z_t, t \in \Z$$ 
+%\formula 
+(1)
+
+For different values of $X_0$ we can generate different valies of $(X_t)$ proces. The main question is, if we can (in this setting) find a stationary times series $(X_t)$, which satisfies
+% \formula 
+(1).
+
+It turns out we cannot always do that. It will depend on $\phi$. $\phi = 1$ gives us a random walk and it is not stationary for nonstationary $(Z_t)$.
+
+If a stationary solution exists it is unique.
+
+Assume $|\phi| < 1$. We can guess the solution by iterating one step backwards. We get:
+$X_t = \phi^kX_{t-k} + \phi^{k-1}Z_{t-k} + \dots + Z_t$.
+One can guess that the stationary solution when $\phi \rightarrow \infty$ is $X_t = \sum_{k = 0}^\infty \phi^k Z_{t-k}$, which is a random series. 
+
+Does this series converge? Wheat does this mean for random variables? (which convergence?) 
+
+We will show the series is converging a.s.(s.g.) (even absolutly). That will mean $X_t$ is well defined for almost all $\omega-$s. Then it satisfies 
+%\formula 
+(1) (check directly) and it is weakly stationary. 
+
+$EX_t = E(\sum \phi^k Z_{t-k}) = \sum \phi^k EZ_{t-k} = 0$. 
+We would like to put the expectation under the sign (but this is not true neccessarily). 
+
+For $h \geq 0$: 
+$\gamma_X(h) = Cov(X_{t +h }, X_t) = E(X_{t+h}X_t) = E(\sum_i \sum_j \phi^i \phi^j Z_{t + h - j} Z_{t + h - i}) = (interchanging)
+\sum_i \sum _j \phi^i \phi^j \gamma_Z(h-i+j)$.
+(This gives $\sigma^2$ only when $h+j = i$.)
+$= \sum_j \phi^j \phi^{h + j}\sigma^2 = \sigma^2 \phi^h \frac{1}{1 - \phi^2}$.
+
+By simmetry we get (for $h \leq 0$):
+$\gamma_X(h) = \sigma^2 \frac{\phi^{|h|}}{1 - \phi^2}$.
+
+This is decreasing exponentially fast! We used Lebesgue dominated convergence.
+
+
+When $\phi = 1$ we cannot find a stationary solution at all:
+$X_t = X_{t-1} + Z_t = \dots = X_0 + Z_1 + \dots + Z_t$. Meaning $(X_t)$ is a random walk. 
+Assume $Var(X_0) < \infty$. $Var(X_t - X_0) = t \sigma^2$. 
+Standard deviation $(X_t - X_0) = \sqrt{t} \sigma$.
+(We will show that $|| X || = \sqrt{EX^2}$ is a norm. )
+$= \sqrt{E((X_t - X_0) - (EX_t - EX_0))^2} = || X_t - X_0 - (EX_t - EX_0) || \leq || X_t - EX_t || + || X_0 - EX_0|| = s.d(X_t) + s.d(X_0) \in [0, \infty]$.
+
+So when $\sqrt{t}\sigma \rightarrow \infty$ the s.d. also goes towards $\infty$. Therefore $(X_t)$ cannot be weakly stationary (for $\sigma \neq 0$). 
+\end{example}
+
+
+
+\begin{excercise}
+Show that there is no stationary solution of 
+%\formula 
+(1) if $\phi = -1$.
+\end{excercise}
+
+\begin{excercise}
+Show that the stationary solution of 
+%\formula 
+(1) for $|\phi| > 1 $ is of the form 
+$X_t = \sum_{k = 1}^\infty (1/\phi)^k Z_{t + k}$.
+\end{excercise}
+
+\begin{example}(ARCH(1))
+Assume $(S_t)$ are prices of financial assets. Log-returns are $X_t = \log{S_t / S_{t-1}} = \log{1 + \frac{S_t - S_{t-1}}{S_{t-1}}}$. The frac is relative return $X'$. 
+$= (approx) X_t'$. So it measures how much money you made (approx).
+
+AR(1) = auto-regressive model of order one:
+
+Typically teople assume that $X_t = \sigma Z:t$, where $Z_t \tilde (iid) N(0,1)$. Black-Scholes model. It is a benchmark model, because it is simple. But it is not correct (realistic).
+
+
+
+Engel (1982):
+Stylized facts contradict i.i.d. assumption. The normal distribution has small tails. Stock prices go up and down -> clustering.
+
+%\formula 
+(2)
+$Z_t \tilde iid N(0,1)$ (or more generally $Z_t \tilde IID(0,1)$)
+$X_t = \sigma_t Z_t$.
+$\sigma_t^2 = \alpha_0 + \alpha_1 X_{t-1}^2$, $\alpha_0, \alpha_1$ konstant.
+$\sigma_t^2$ is sometiems called volatility
+
+ARCH = auto-regressive conditionally heteroscadastic (heteroscadastic = variance is changing)
+
+Main question: does 
+%\formula 
+(2) have a stationary solution? 
+For $\alpha_1 \in (0,1)$ one can find a stationary solution with the same trick as before (by iterating backwards).
+$\sigma_t^2 = \alpha_0 + \alpha_0 \sum_{j = 1}^\infty \alpha_1 Z_{t-1}^2 \dots \alpha_1Z_{t-j}^2$ 
+%\formula 
+(3)
+
+This series is converging almost surely (a.s.). 
+Series in 
+%\formula 
+(3) is only made of non-negative terms. 
+
+If we show that the expectaion of this formula is finite than we know that the formula is converging a.s..
+$\sigma_t^2 = E(\alpha_0 + \alpha_0 \sum_j \alpha_1^j Z_{t-1}^2 \dots Z_{t-j}^2)$.
+Because all terms are non-negative we can exchange $E and \lim$ because of Fubinni (for integrals).
+$ = \alpha_0 + \alpha_0 \sum_j \alpha_1^j = \alpha_0 \frac{1}{1-\alpha_1} < \infty$. Therefore $\sigma_t^2 < \infty$ a.s.
+
+The pair $(\sigma_t^2, \sigma_tT_t = X_t)$ is well defined and solves the 
+%\formula 
+(2).
+
+Observe $\sigma_t \in \sigma\{ Z_{t-q},Z_{t-2}, \dots\}$. So $\sigma_t$ is independent of $Z_t, \dots$.
+$E(X_t) = E(E(X_t | \sigma\{\Z_{t-1}, \dots\}))$. We can take $\sigma_t$ out, if it is a constant (and it is, ecause we know the sigma algebra and therefore all values before $t$. In other words $\sigma_t$ is measurable in the sigma algebra). 
+$ =E(E(Z_t)\sigma_t)= E(\sigma_t 0) = 0$ .
+
+We can do the same for $E(X_t^2 | \sigma\{\dots\}) = 1 \sigma_t^2$.
+$Var(X_t) = EX_t^2 = E(E(\sigma_t^2 Z_t^2 | \sigma\{\dots\})) = E(\sigma_t^2) = \frac{\alpha_0}{1 - \alpha_1}$.
+
+So variance does not change. Only the conditial variance does.
+
+Similarly one can show that $X_t$-s are uncorrelated. So $Cov(X_{t+ h}, X_t) = 0, h \neq 0$. It follows that $(X_t)'$ are white noise. This does not contradict the reality. Prides are not correlated, but are dependant.( Because the sign is unpredictable.)
+
+
+It was later generalized by Boleslev (1986) into GARCH (generalized ARCH). it is the most often used model, that models real-life data.
+
+In our example $X_t$ is also strictly stationary (it is weakly, because it is white noise):
+Since $X_t = \Phi(Z_t, Z_{t-1}, \dots) Z_t'$-s iid. (idea of proof). 
+\end{example}
+
+\subsection{Properties of $\gamma$ and $\rho$}
+
+$\gamma_X(h) = Cov(X_{t+h}, X_t), h \in \Z$
+$\rho_X(h) = Corr(X_{t+h},X_t) = \gamma_X(h) / \gamma_X(h)$
+
+\begin{lema}
+\begin{itemize}
+\item $\gamma_X(0) \geq 0$
+\item $|\gamma_X(h)| \leq \gamma_X(0)$
+\item $\gamma$ is an even function
+\item $\gamma$ is a positive semidefinite function i.e. for all $n$ and for all $(a_1, \dots, a_n) \in \R^n$ 
+$\sum_{i=1}^\infty \sum_{j=1 }^\infty q_i \gamma(i -j) a_j \geq 0$ 
+\end{itemize}
+\end{lema}
+
+\proof
+\begin{itemize}
+\item todo
+\item Schwartz-Cauchy inequality
+\item todo
+\item the sum equals $Var(a_1X_1 + \dots + a_n X_n) =$
+$ \sum_{i,j} Cov(a_iX_i,a_jX_j) = \sum a_i a_j \gamma(i-j)$. 
+\end{itemize}
+\endproof
+
+\begin{observation}
+(iv) equals to 
+matrix $\Gamma_n = $
+$\gamma(0) \gamma(1) \dots \gamma(n-1)$
+$\gamma(1)\dots$
+$\dots$
+
+is positive semidefinite
+\end{observation}
+
+
+\begin{theorem}
+Function $\gamma: \Z \rightarrow \R$ is autocovariant function of some weakly stationary time series 
+iff
+$\gamma$ is even and positivesemidefinite
+\end{theorem}
+
+
+\proof
+(->) proved in lemma
+(<-) Because of positive semidefinitnes of $\Gamma_n$ for all $n$ it follows that there exists $N(0, \Gamma_n)$. $\Gamma_n$ can be a covariance matrix. This distributions as a family of f.d.d-s are consistent. Meaning they satisfy the condition of the theorem 
+%\ref
+ (1).
+
+Theorem (1) now implays that we can find a (gaussian) sequence and has $\Gamma_n$ as its autocovariance function.
+
+\endproof
+
+\begin{observation}
+Function $\rho$ has the same properties as function $\gamma$. We also know that $\rho(0) = 1$ always.
+\end{observation}
+
+\begin{observation}
+It is dificult to test for positive semidifinitnes. Sometimes it is easier to construct a sequence directly.
+\end{observation}
+
+\begin{excercise}
+Show that the following functions are positive semidefinite.
+\begin{itemize}
+\item $\gamma(h) = 2$
+\item $\gamma(h) =$ 2 if h = 0 1 if h = +-1 0 otherwise
+\item $\gamma(h) = a \cos{\nu h}, a, \nu > 0$
+\end{itemize}
+\begin{itemize}
+\item $X_t = X \tilde N(0,2)$
+\item is the autocov. of MA model (done before)
+\item $\gamma$ is the autocor. of periodic seg. $X_t = \dots$ (done before)
+\end{itemize}
+
+
+\end{excercise}
+
+\begin{excercise}
+If $\gamma_1$ and $\gamma_2$ are even and positive semidefinite functions the same holds for the function 
+$\gamma = \alpha_1 \gamma_1 + \alpha_2 \gamma_2, \alpha_1, \alpha_2 \geq 0$. 
+
+We sum the two series, multiplied not by $\alpha_1$, but some function of it.
+
+In practise we need to estimate $\gamma_X, \rho_X$ and $\mu = EX_t$. Natural estimators are easy to find:
+$\overline{X_n} = 1/n (X_1 + \dots + X_n)$ the arithmetic mean
+
+For iid it converges (law of large numbers). Even a stronger results is the central limit teorem.
+
+We do not have iid, because we have dependance. We can do:
+$\hat{\gamma(h)} = $
+$1/n \sum_{i = 1}^{n- h}$
+$ (X_i - \overline{X_n})(X_{i+h} - \overline{X_n})$.
+Obviously $h < n$ must hold. We say $h =$ {\bf  lag}.
+We divide by $n$ because such a matrix is again positive definite. But it is not unbiased (we would have to divide by the $n - 1 - $ number of missing terms $= h$). In this case we would not have a positive definite matrix. 
+
+For $h < 0$ we set $\gamma(h) = \gamma(-h)$.
+
+$\hat{\rho(h)} = \hat{\gamma(h)} / \hat{\gamma(0)}$.
+
+\end{excercise}
+
+
+
+
+
+\subsection{First steps of practical analysis of time series}
+
+;
+
+R libraries:
+
+tseries
+
+TSA
+
+stats
+
+evir
+
+fGarch $->$ not perfectly written ?
+
+mean
+
+sd
+
+read.table
+
+ts.plot $->$ on the same graph (for multivaribale)
+
+plot.ts $->$ on more graphs
+
+acf   plots $\hat{\rho}$
+
+acf also works for squares. Our job is to explain this $->$ we are outside the boundaries for siemens data form R.
+
+arima.sim
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document} 

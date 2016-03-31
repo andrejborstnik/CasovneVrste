@@ -1,0 +1,397 @@
+\documentclass[12pt,a4paper]{amsart}
+% ukazi za delo s slovenscino -- izberi kodiranje, ki ti ustreza
+\usepackage[slovene]{babel}
+%\usepackage[cp12500]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+\usepackage{graphicx}
+\graphicspath{{./Slike/}}
+%\usepackage[normalem]{ulem}
+\usepackage[dvipsnames,usenames]{color}
+
+\setlength{\evensidemargin}{-0mm}
+\setlength{\oddsidemargin}{-0mm}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\textheight}{260mm}
+\setlength{\textwidth}{160mm}
+\setlength{\footskip}{10mm}
+\setlength{\topmargin}{-10mm}
+
+\textwidth 15cm
+\textheight 24cm
+\oddsidemargin.5cm
+\evensidemargin.5cm
+\topmargin-5mm
+\addtolength{\footskip}{10pt}
+\pagestyle{plain}
+\overfullrule=15pt % oznaci predlogo vrstico
+
+\setlength{\parindent}{0pt}
+
+
+% ukazi za matematicna okolja
+\theoremstyle{definition} % tekst napisan pokoncno
+\newtheorem{defn}{Definition}[section]
+\newtheorem{example}[defn]{Example}
+\newtheorem{excercise}[defn]{excercise}
+\newtheorem{observation}[defn]{Observation}
+
+\theoremstyle{plain} % tekst napisan posevno
+\newtheorem{lema}[defn]{Lema}
+\newtheorem{theorem}[defn]{Theorem}
+\newtheorem{claim}[defn]{Claim}
+\newtheorem{collary}[defn]{Collary}
+
+
+% za stevilske mnozice uporabi naslednje simbole
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\C}{\mathbb C}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\F}{\mathbb F}
+
+
+\begin{document}
+
+{\bf \huge Time series 2}
+
+\vskip1cm
+
+{\bf Predavatelj : } Bojan Basrak
+
+% https://web.math.pmf.unizg.hr/~bbasrak/
+% www.math.hr/~bbasrak
+% {\bf www: } https://web.math.pmf.unizg.hr/$\tilde$bbasrak/
+
+{\bf Grades: } Exam + theoretical = 50\% and seminar = 50\% with oral presentation (in pairs).
+
+{\bf Deadlines: } Exam in first half of may. Another two weeks for the seminar. Not too hard.
+
+\section{Basic transformations of time series}
+
+\vskip1cm
+
+The goal of each transformation is to make time series stationary (or to appear to be stationary).
+Why is stationrity important? If the distrubution is changing it is hard to predict anything.
+
+
+\begin{example} (log/relative returns)
+$S_t =$ financial data
+$(S_t) \rightarrow (X_t), X_t = \log{S_t/S_{t-1}} $
+$ \rightarrow (X_t'), X_t' = \frac{S_t - S_{t-1}}{S_{t-1}}$
+\end{example}
+
+We define the {\bf backwards shift} operator 
+$B(X)_t = (BX)_t = X_{t-1}, t \in \Z$.
+
+Notice that it maps $(X_t)_t$ into $(X_{t-1})_t$.
+
+% on piše grad, govori pa delta...
+We also define the {\bf differencing} operator $\nabla(X)_t = \nabla X_t = (I - B) X_t = X_t - X_{t-1}$. In other words
+$\nabla = I - B$.
+
+Recursively for $j \geq 1$ we difine $B^j X_t = B (B^{j-1} X_t)$ and the same for $\nabla$.
+
+Note that $\nabla^0 = B^0 = I$. 
+
+\begin{example}
+Assume $(Y_t)$ is strictly stationary and $a,b \in \R, X_t = a t + b + Y_t$, then $X_t$ cannot be stationary unless $a = 0$. (homework ... use charasteristic functions)
+
+But 
+$\nabla X_t = at + b + Y_t - a(t-1) - b - Y_{t-1} = a + Y_t - Y_{t-1}$ is stationary ($Y_t$ and $Y_{t-1}$ have the same distribution).  
+\end{example}
+
+
+\begin{excercise}
+Assume $(Y_t)$ is weakly stationary in the previous example. Show that $(X_t)$ is weakly stationary as well.
+
+(hint: use lemma below)
+\end{excercise}
+
+\begin{excercise}
+Show 
+$\nabla^2 X_t = X_t - 2X_{t-1} + X_{t-2}$ for all $t$ and use that to determine a general form of $\nabla^k, k \geq 1$.
+\end{excercise}
+
+
+\begin{excercise}
+Assume $(Y_t)$ is weakly (strongly) stationary. Assume $n_j = \sum_{j=0}^k a_j t^j$ and $X_t = n_t + Y_t$.
+
+Then 
+$\nabla^k X_t = k! a_k + \nabla^k Y_t$, which is again weakly (strongly) stationary.  
+\end{excercise}
+
+\begin{observation}
+Differencing can remove any polynomial trend. 
+\end{observation}
+
+
+Assume that time series $(Y_t)$ satisfies 
+$Y_t = \sum_{k = -\infty}^\infty h_k X_{t-k}, t \in \Z$ (assume it converges) for some sequence $h_k$ and some time series $(Y_t)$. Than we say that $(Y_t)$ is a product of action of {\bf  liner filter} of the sequence $(X_t)$.  
+
+Formally we denote {\bf the filter } by $\Phi(B) =  \sum_{k = -\infty}^\infty h_k B^k$.
+
+\begin{example}
+$\nabla = B^0 - B^1$, so $h_0 = 1, h_1 = -1$ and $0$ otherwise.
+
+\end{example}
+
+If $(h_k)$ is absoultely summable and $(X_t)$ is a time series, which satifies $X_t = \sum h_k Z_{t-k}$ for $Z_t$ white noise we say $(X_t)$ is a {\bf liner process}. 
+
+So linear process is an absoultely summable linear filter acting on white noise. 
+
+
+
+\begin{example}(MA(1))
+$X_t = Z_t + v Z_{t-1}$, $Z_t$ white noise.
+\end{example}
+
+
+The condition of absolute summability ensures $X_t$ is well defined (the sum converges).
+
+\begin{lema} (key lemma on linear transformations)
+Assume $(Z_t)_t$ is a time series and the sequence $(h_k)_k$ satisfies the absolute summability condition. Then 
+\begin{enumerate}
+\item $\sup_t{E|Z-t|} < \infty \Rightarrow  \sum_k h_k Z_{t-k}$ converges absolutely a.s. and in $L_1$. 
+\item $\sup_t{E Z_t^2} < \infty \Rightarrow \sum_k h_k Z_{t-k}$ converges in $L_2$ as well.
+\item $Z_t$ weakly stationary $\Rightarrow$ the series $X_t = \sum_k h_k Z_{t-k}$ is weakly stationary as well. Moreover $\gamma_X(k) = \sum_{i,j} h_i h_{j + i - k} \gamma_Z(i)$.
+\end{enumerate}
+
+\end{lema}
+
+
+Reminder:
+$Y_n \rightarrow (L_p) Y$ means $E|Y_n - Y|^p \rightarrow 0$. 
+
+
+\begin{excercise}
+Assume $(X_t)$ satisfies $X_t \geq 0$ for all $t$. Then $E\sum_t X_t = \sum_t E X_t$ (can be $+ \infty$).
+
+(hint: lebesbue theorem on monotone convergence)
+% $\sum_{|t| \leq m} \convergesUp \sum_t X_t$
+\end{excercise}
+
+\begin{excercise}
+Assume $\sum_t E|X_t| < \infty$. Then $\sum_t X_t$ converges a.s. and in $L_1$. Moreover $E\sum_t X_t = \sum_t E X_t$.
+
+(hint: again lebesgue, but on dominat convergence)
+\end{excercise}
+
+\proof (of lema)
+\begin{enumerate}
+\item Observe $\sum_k E|h_k Z_{t-k}| \leq \sup_t E|Z_t|\sum_k |h_k|$. Now the previous excercise proves the series converges (everithing $< \infty$). 
+\item If $\sup_t E Z_t^2 < \infty$ than the same goes for first moments (for example Cauchy-Schwartz). Also $|z| \leq 1 + z^2$. Now the series is converging, acording to (1). 
+\item Consider the $E(\sum_j h_j Z_{t-j} - \sum_{|j|\leq k} h_j Z_{t-j})^2 =$
+
+$ E(\sum_{|j| > k} h_j Z_{t-j})^2  \leq E(\sum_{|j| > k} |h_j| |Z_{t-j}|)^2 =$
+
+$ \sum_{ |i|,|j| > k} |h_i||h_j| E(|Z_{t-i}||Z_{t-j}|)\leq$
+
+($E(|Z_{t-i}||Z_{t-j}|) \leq \sqrt{E|Z_{t-i}|^2 E|Z_{t-j}|^2} \leq \sup_t E Z_t^2$.)
+
+$\leq  \sup_t E Z_t^2 (\sum_{|i| > k} |h_i|)^2$
+
+Because the $h_k$ converges all together moves to $0$ as $k \rightarrow \infty$. Now we again use (1) to see $X_t$ is well defined and the series converges a.a. and in $L_1$. Just use the previous excercise.
+
+$E(\sum_j h_j Z_{t-j}) = \sum_j E(h_j Z{t-j}) = \sum_j h_j E(Z{t-j}) = \mu_Z \sum_j h_j$.
+
+We can assume $\mu_Z = 0$ (otherwise we just substract it from the series and solve it for that series). It follows $EX_t = 0$ and 
+
+$Cov(X_{t+h}, X_t) = E X_{t+h}X_t = E \sum_{i,j}h_i Z_{t+h-i}h_j Z_{t-j} = $
+
+$= (excercise) \sum_{i,j} h_i h_j E(Z_{t+h-i} Z_{t-j})$
+
+($E(Z_{t+h-i} Z_{t-j}) = \gamma_Z(h-i+j) \rightarrow 0$ (Cauchy-Schwatz or $|\gamma_Z(h)| \leq \gamma_Z(0)$).)
+
+($l = h - i + j$)
+
+$= \sum_{i,l}h_i h_{i+l-h} \gamma_Z(l) = \gamma_X(h)$. This does not depend on $t$!!  
+\end{enumerate}
+\endproof
+
+
+\begin{excercise}
+If $Z_t \tilde WN(0, \sigma^2 )$. For convergence of series $\sum_k h_k Z_{t-k}$ it is sufficent that $\sum h_j^2 < \infty$.
+
+(hint: Use Hilber space theory to prove it)
+\end{excercise}
+
+Linear filter $\Psi(B) = \sum_k h_k B^k$ is {\bf causal} if $h_k = 0$ for $k < 0$. 
+
+A linear process $X_t = \sum:k h_k Z_{t-k}$ is {\bf causal} (with respect to white npoise $(Z_k)$) if $h_k = 0$ for $k < 0$. 
+
+\begin{example}
+For $|\phi| < 1$ $(Z_t) \tilde WN(0,1)$ the series $X_t = \sum_{j=0}^\infty \phi^j Z_{t-j}$ is well defined and solves the AR(1) equation. Moreover $(X_t)$ is causal. 
+\end{example}
+
+Assume 
+$\Psi(B) = \sum_j \psi_j B^j, \Phi(B) = \sum_j \phi_j B^j$ and $\phi_j, \psi_j$ are absolutely summable. For the time series $(Z_t)$ such that $E|Z_t| < \infty$ define $X_t = \Psi(B) \Phi(B) Z_t$.
+
+Use the lemma 
+%\ref
+to see everything is well defined. 
+
+$X_t = \sum_k \psi_k \sum_j \phi_j Z_{z-k-j} = \sum_{k,j} \psi_k \phi_j Z_{t-k-j}$
+
+($k+j = l, j = l-k$)
+
+$= \sum_l Z_{t+l} \sum_k \psi_k \phi_{l-k}$
+
+($\sum_k \psi_k \phi_{l-k} = \theta_l$)
+
+$= \Psi(B) 
+%\composed 
+\Phi(B) = \sum_l \theta_l B^l$
+
+It follows that 
+$\Psi(B) 
+%\composed 
+\Phi(B) = \Phi(B)
+% \composed 
+\Psi(B)$
+
+
+\section{On practical time series analysis}
+\vskip1cm
+
+
+If we cannot assume stationarity we will assume that we study time series of the following form:
+
+$X_t = m_t + S_t + Y_t$, where 
+
+the {\bf trend} $m_t$ is a deterministic (hence the small letter) sequence, which "does not vary too much",
+
+the {\bf seasonality} $s_t$ a deterministic sequence of known period $d$, such that $s_t = s_{t+d}$ for all $t$
+
+and the $Y_t$ a (weakly/strongly) stationary time series.
+
+
+\begin{observation}
+In practise it is hard to distinguish the three components. 
+
+Global warming: trend or seasonality? Here it is proven, but it can be hard to determine.
+\end{observation}
+
+But how do you do it, if you have to?
+
+Practical time series analysis (t.s.a.) can be split into several steps:
+\begin{enumerate}
+\item plot the observations $x_t$. We want to detect possible trend and seasonality. 
+\item try to remove the trend and seasonality
+\item residuals $y_t = x_t - \hat{m}_t - \hat{s}_t$ or $y_t = \log{x_t / x_{t-1}}$ are than modelled  by a stationary model
+\begin{enumerate}
+\item choose a model (AR, AM, ARCH, $\dots$, ARMA)
+\item estimate parameters
+\item check goodnes of fit
+\end{enumerate}
+\end{enumerate}
+After that we can try to predict or simulate future behavior of the time series.
+
+Use Ocham's razor.
+
+Box (person): All models are wrong. Some are usefull.
+
+Einstain: Make the model as simple as possible, but not simpler than that.
+
+\subsection{Decomposing time series}
+
+\vskip1cm
+
+
+Assume $X_t = m_t + s_t + Y_t$, $Y_t$ a weakly stationary sequence, $s_t = s_{t+d}$ and $\sum_{t=1}^d S_t = 0$ (otherwise we can substract the mean in $m_t$) and $E Y_t = 0$ (similar as before). 
+
+Assume (for start) there is no seasonality. 
+\begin{enumerate}
+\item We can remove the trend by differencing. We have seen that if $m_t = \sum_{j=0}^ka_j t^j$ is polinomial and we apply $\nabla^k$ we get
+$X_t = k! a_k \nabla^k Y_t$. Because $Y_t$ is stationary $X_t$ is stationary by lemma
+%\ref
+.
+\item Direct estimation of the trend. 
+\begin{enumerate}
+\item smoothing. Take $q < n \in N$ ("not too small"). We can set $\hat{m}_t = 1 / (2q + 1)\sum_{j = -q}^q X_{t+j}$, which is a linear filter. 
+
+$\hat{m}_t = 1 / (2q + 1)\sum_{j = -q}^q m_{t+j}+ 1 / (2q + 1)\sum_{j = -q}^q Y_{t+j}$.
+
+$1 / (2q + 1)\sum_{j = -q}^q Y_{t+j} = (approx) 0$ by law of large numbers??
+
+If $m_t$ does not vary too much it is picewise linear and we can model it this way and it will be approximately true.
+
+But this aproach does not work on the edge of the time series. 
+
+\item exponential smoothing. Take $\alpha \in (0,1)$. $\hat{m}_1 = X_1$. $\hat{m}_t = \alpha X_t + (1 - \alpha) m_{t-1} =
+\sum_{j = 0}^{k-2} \alpha(1-\alpha) X_{t-j} + (1-\alpha)^{t-1} X_j$.
+
+\item fitting a functin to $m_t$, e.g. polynomial
+
+$\hat{m}_t  =\sum_{j = 0}^k \hat{a}_jt^j$ and we choose $\hat{a}_k$ by OLS (najmanjši kvadrati).
+\end{enumerate}
+ \item Remove seasonality and the trend by differencing. Define operator $\nabla_d = X_t = X_t - X_{t -d} = (I - B^d)X_t$.
+If $s_t = s_{t+d}$ then $\nabla_d X_t = m_t - m_{t-d} + s_t - s_{t-d}+=  Y_t - Y_{t-d}$, but the $ s_t - s_{t-d} = 0$, so we come back to the previous examples.
+
+\item Direct estimation of trend and seasonality (can be done in many ways, we show one).
+\begin{enumerate}
+\item def $q = d/2$ if $d$ even, $(d-1) / 2$ if $d$ odd. The initial estimate of the trend is choosen by smoothing:
+
+$d = 2q$, $\hat{w}_t = \frac{1}{2d}X_{t-q} + \frac{1}{d} X_{t-q+1} + \frac{1}{d}X_{t+q-1} + \frac{1}{2d}X_{t+q}$.
+
+Here we are trying to estimate the trend. Say we have monthly data and $q = 12$. We estimate by averaging over one year. But the edge months would be counted twice (previous year, next year), so we only take half od that. 
+
+\item Transform data by removing the initial estimation of the trend: $X_t \rightarrow X_t - \hat{w}_t$.
+Now we also estimate the seasonality. Initially we set $\hat{u}_k = \frac{1}{ \lfloor\frac{n-k}{d}\rfloor + 1 } \sum_{j=0}^{\lfloor\frac{n-k}{d}\rfloor} (x_{j+k} - \hat{w}_{j+d+k}), k=1,\dots, d$
+
+$\hat{s}_k = \hat{u}_k - 1/d \sum_{j=1}^d \hat{u}_j, k=1, \dots, d, \hat{s}_t = \hat{s}_{t-d}$ 
+
+\item we transform $X_t \rightarrow X_t - \hat{s}_t = d_t$. For $d_t$ we estimate trend by one of the methods above. 
+
+\end{enumerate}  
+\end{enumerate}
+
+
+R has many (special) procedures to compute these estimates (use as a black box). 
+
+
+\vskip0.5cm
+
+Again R on screen:
+
+hist
+
+qqnorm (qqplot package)
+
+filter
+
+HoltWinters
+
+lagged plot (plot $(X_t, X_{t+d})$). If no pattern, there is no dependance
+
+decompose
+
+stl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document} 

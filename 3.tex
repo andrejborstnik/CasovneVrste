@@ -1,0 +1,230 @@
+\documentclass[12pt,a4paper]{amsart}
+% ukazi za delo s slovenscino -- izberi kodiranje, ki ti ustreza
+\usepackage[slovene]{babel}
+%\usepackage[cp12500]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{bbm}
+\graphicspath{{./Slike/}}
+%\usepackage[normalem]{ulem}
+\usepackage[dvipsnames,usenames]{color}
+
+\setlength{\evensidemargin}{-0mm}
+\setlength{\oddsidemargin}{-0mm}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\textheight}{260mm}
+\setlength{\textwidth}{160mm}
+\setlength{\footskip}{10mm}
+\setlength{\topmargin}{-10mm}
+
+\textwidth 15cm
+\textheight 24cm
+\oddsidemargin.5cm
+\evensidemargin.5cm
+\topmargin-5mm
+\addtolength{\footskip}{10pt}
+\pagestyle{plain}
+\overfullrule=15pt % oznaci predlogo vrstico
+
+\setlength{\parindent}{0pt}
+
+
+% ukazi za matematicna okolja
+\theoremstyle{definition} % tekst napisan pokoncno
+\newtheorem{defn}{Definition}[section]
+\newtheorem{example}[defn]{Example}
+\newtheorem{excercise}[defn]{excercise}
+\newtheorem{observation}[defn]{Observation}
+
+\theoremstyle{plain} % tekst napisan posevno
+\newtheorem{lema}[defn]{Lema}
+\newtheorem{theorem}[defn]{Theorem}
+\newtheorem{claim}[defn]{Claim}
+\newtheorem{collary}[defn]{Collary}
+
+
+% za stevilske mnozice uporabi naslednje simbole
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\C}{\mathbb C}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\F}{\mathbb F}
+
+
+\begin{document}
+
+{\bf \huge Time series 3}
+
+\vskip1cm
+
+{\bf Predavatelj : } Bojan Basrak
+
+% https://web.math.pmf.unizg.hr/~bbasrak/
+% www.math.hr/~bbasrak
+% {\bf www: } https://web.math.pmf.unizg.hr/$\tilde$bbasrak/
+
+{\bf Grades: } Exam + theoretical = 50\% and seminar = 50\% with oral presentation (in pairs).
+
+{\bf Deadlines: } Exam in first half of may. Another two weeks for the seminar. Not too hard.
+
+\section{Hilbert spaces, Conditional expectation, and Prediction}
+
+\vskip1cm
+
+Problem: I have given observations $X_1, \dots, X_n$. The goal is to predict $X_{n+1}$. 
+
+The traditional way would be to minimise RMSE 
+$\min_g E(X_{n+1} - g(X_1, \dots, X_n))^2$.
+
+A simpler problem would be to find $E(X_{n+1} - (\alpha_1 X_n + \dots + \alpha_n X_1))^2$. ($X_n$ most important, hence $\alpha_1$)
+
+\begin{defn}
+{\bf Hilbert space} is a complete inner product space.
+\end{defn}
+
+\begin{theorem}(projection)
+If $M$ is a closed subspace of a Hilbert space $H$ and $x \in H$, then
+\begin{enumerate}
+\item there is an unique $\hat{x} \in M$, such that
+$$|| x - \hat{x}|| = \inf_{y \in M}|| x - y ||$$
+\item $\hat{x} \in M$ $|| x - \hat{x}|| = \inf_{y \in M}|| x - y ||$ is equivalant to $x' \in M$, $x - \hat{x} \perp M$ i.e.
+$(x - \hat{x}) \in M^{\perp}$
+\end{enumerate}
+\end{theorem}
+\proof
+No proof. Simple.
+\endproof
+
+
+The mapping $x \rightarrow \hat{x}$ is denoted by $\Pi_M$. Clearly it is a linear operator, $|| \Pi_M X|| \leq ||x||$ for all $x \in H$ and $\Pi_M^2 = \Pi_M$. For $M_1 < M_2$ (closed subspace) we know $\Pi_{M_1}\Pi_{M_2}x = \Pi_{M_1}x$.
+
+If $M_1 \perp M_2$ closed subspaces of $H$ then $\Pi_{M_1 + M_2} x = \Pi_{M_1}x + \Pi_{M_2}x$.
+
+We will only be interested in the hilbert space $L_2(\Omega, F, P)$. We say $X \in L_2(\Omega, F, P)$ if $EX^2 < \infty$.
+
+Although actually $[X] \in L_2(\Omega, F, P)$ (equivalant classes are contained in $L_2$). 
+
+$X \tilde Y$ if $P(x \neq Y) = 0$.
+
+\begin{observation}
+One can consider complex valued random variables as well. The inner product $X, Y \in L_2(\Omega, F, P)$
+$<X,Y> = E(X \overline{Y})$.
+% todo skalarni produkt
+\end{observation}
+
+Thus for real valued $X,Y$ conjugation is not needed. 
+$||  X || = ||\sqrt{<X,X>}|| = \sqrt{EX^2}$
+Convergence in $L_2$ is equivalent to convergence in this norm.
+
+Cauchy-Schwartz:
+$|<X,Y>|^2 \leq ||X||^2 ||Y||^2$ (1)
+i.e.
+$|EXY| \leq \sqrt{EX^2 EY^2}$.
+
+\begin{example}
+If $X_n \rightarrow^{L_2} X, Y_n \rightarrow^{L_2} Y$ then
+$<X_n, Y_n> \rightarrow <X,Y>, n\rightarrow \infty$
+\end{example}
+\proof
+We observe the difference $|<X_n, Y_n> - <X,Y>| \leq |<X_n, Y_n - Y>| + |<X_n - X, Y>| \leq ||X_n|| ||Y_n - Y|| + ||X_n - X|| ||Y||$. 
+
+We notice $||X_n - X||||Y||\rightarrow 0$, because the norm is finite. Similar for the other term (we know the $\sup_n X_n$ is bounded, so we can use the same argumet). 
+\endproof
+
+
+\begin{excercise}
+Use 
+% \formula
+(1) to show $X_n \rightarrow^{L_2} X \Rightarrow X_n \rightarrow^{L_1} X$
+\end{excercise}
+
+
+\begin{excercise}
+Show $X, Y \in L_2$ then
+$SD(X + Y) \leq SD(X) + SD(Y)$
+\end{excercise}
+
+\subsection{Conditional expectation}
+
+$F_0 \leq F$ sub $\sigma-$algebra then
+$L_2(\Omega, F_0, P) \leq L_2(\Omega, F, P)$ as a closed subspace.
+
+
+\begin{defn}
+The projection of $X \in L_2(\Omega, F, P)$ on  $L_2(\Omega, F_0, P)$ is called {\bf conditional expectation} of $X$ with respect to $F_0$, notation $E(X | F_0)$.
+\end{defn}
+
+\begin{defn} (alternative)
+The conditional expectation of nonnegative or integrable $X$ with respect to $F_0$ is a $F_0-$measurable random variable denoted by $E(X | F_0)$ such that 
+$$\int_A E(X | F_0) dP = \int_A X dP, \;\;A \in F_0.$$
+\end{defn}
+
+\begin{observation}
+The difference is the second definition is more general, as it asks for less conditions. There is also a subtle difference:
+According to definition one
+$E(X | F_0) \in  L_2(\Omega, F, P)$ and according to definition two 
+$E(X | F_0)$ is one of many equivalant random varibles. 
+
+This integral exists because of the Radon-Nykodimov theorem. For $X \in L_2$ two definitions are (esentially) equivalent.
+\end{observation}
+
+\begin{example}
+Assume $X \in  L_2(\Omega, F, P)$ and $Y = E(X |F_0)$ with respect to definition one. Then $Y$ also satisfies the second definition.
+
+Really all we need to show  is $Y$ satisfies the integral, which is equivalent to the 
+$$\int_A(X-Y)\mathbbm{1}_A dP = 0,$$
+or equivalently
+$$E(X - Y) \mathbbm{1}_A = <X-Y, \mathbbm{1}_A> = 0$$
+\end{example}
+
+\begin{defn}
+For nonnegative or integrable $X$ we know
+$E(X | Y ) = E(X | \sigma(Y))$
+$Y$ is an arbitrary random vector on the same probablility space. 
+\end{defn}
+
+
+\begin{example}
+\begin{enumerate}
+\item $F_0 = \{\emptyset, \Omega\}$. Clearly $E(X | F_0) = EX$,
+\item If $X \in F_0$ measurable, then $E(X | F_0) = X$.
+\end{enumerate}
+\end{example}
+
+\begin{theorem} (properties of conditional expectation)
+For $X,Y$ integrable random variables on $(\Omega, F, P)$ and $G \subset F \sigma-$algebra. The following holds:
+\begin{enumerate}
+\item $E(\alpha X + \beta Y | G) = \alpha E(X | G) + \beta E(Y | G)$
+\item if $Z$ is $G$ measurable, $Z, X \in L_2$ then 
+$E(ZX|G) = Z E(X|G)$ a.s.
+\item $X \geq 0 \Rightarrow E(X | G) \geq 0$ a.s.
+\item  $G_0 \subset G \subset F \sigma-$algebra
+$E(E(X|G)|G_0) = E(X|G_0)$ a.s.
+In particular for $G_0 = \{\emptyset, \Omega\}$ we see
+$E(E(X|G)) = E(X)$
+\item if $X$ is independent of $G$ then
+$E(X | G) = EX$
+\end{enumerate}
+\end{theorem}
+
+\begin{lema} (Dudely)
+For random variables $(Y_\alpha: \alpha \in A)$. If $X \in \sigma(Y_\alpha: \alpha \in A)$ then
+\begin{enumerate}
+\item $|A| = k < \infty \Rightarrow$ there exists a measurable $g: \R^k \rightarrow \R$ and $X = g(Y_{\alpha_1}, \dots, Y_{\alpha_k})$
+\item $|A| = +\infty \Rightarrow$ there exists a countable set of indices $\{\alpha_i\}_{i \in \N} \in A$ and measurable
+$g: R^\N \rightarrow \R$ such that $X = G(Y_{\alpha_1}, \dots)$
+\end{enumerate}
+\end{lema}
+
+Since $E(X|Y) \in \sigma(Y) \Rightarrow E(X|Y) = g(Y)$ for some $g$. It makes sense to write $E(X | Y = y)$. 
+
+
+
+
+
+\end{document} 
