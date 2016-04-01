@@ -1,0 +1,402 @@
+\documentclass[12pt,a4paper]{amsart}
+% ukazi za delo s slovenscino -- izberi kodiranje, ki ti ustreza
+\usepackage[slovene]{babel}
+%\usepackage[cp12500]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{bbm}
+\graphicspath{{./Slike/}}
+%\usepackage[normalem]{ulem}
+\usepackage[dvipsnames,usenames]{color}
+
+\setlength{\evensidemargin}{-0mm}
+\setlength{\oddsidemargin}{-0mm}
+\setlength{\headheight}{0mm}
+\setlength{\headsep}{0mm}
+\setlength{\textheight}{260mm}
+\setlength{\textwidth}{160mm}
+\setlength{\footskip}{10mm}
+\setlength{\topmargin}{-10mm}
+
+\textwidth 15cm
+\textheight 24cm
+\oddsidemargin.5cm
+\evensidemargin.5cm
+\topmargin-5mm
+\addtolength{\footskip}{10pt}
+\pagestyle{plain}
+\overfullrule=15pt % oznaci predlogo vrstico
+
+\setlength{\parindent}{0pt}
+
+
+% ukazi za matematicna okolja
+\theoremstyle{definition} % tekst napisan pokoncno
+\newtheorem{defn}{Definition}[section]
+\newtheorem{example}[defn]{Example}
+\newtheorem{excercise}[defn]{Excercise}
+\newtheorem{observation}[defn]{Observation}
+\newtheorem{proposition}[defn]{Proposition}
+
+\theoremstyle{plain} % tekst napisan posevno
+\newtheorem{lema}[defn]{Lema}
+\newtheorem{theorem}[defn]{Theorem}
+\newtheorem{claim}[defn]{Claim}
+\newtheorem{collary}[defn]{Collary}
+
+
+% za stevilske mnozice uporabi naslednje simbole
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\C}{\mathbb C}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\F}{\mathbb F}
+
+
+\begin{document}
+
+{\bf \huge Time series 4}
+
+\vskip1cm
+
+{\bf Predavatelj : } Bojan Basrak
+
+% https://web.math.pmf.unizg.hr/~bbasrak/
+% www.math.hr/~bbasrak
+% {\bf www: } https://web.math.pmf.unizg.hr/$\tilde$bbasrak/
+
+{\bf Grades: } Exam + theoretical = 50\% and seminar = 50\% with oral presentation (in pairs).
+
+{\bf Deadlines: } Exam in first half of may. Another two weeks for the seminar. Not too hard.
+
+Practical in R:
+
+pcaf $->$ AR
+
+ocf $->$ MA
+
+acf
+
+arima.sim
+
+par $->$ splits plot into more parts
+
+qqmorm $->$ Normal Q-Q plot
+
+spec $->$ for spectral analysis
+
+spec.pgram $->$ smoothed periodogram
+
+periodogram
+
+\begin{observation}
+For $\R$-valued time series $f_X$ is symmetric (because of fourier)! The frequincies are also divided by $2 \pi$ and that is why the interval we draw is $[0, 1/2]$.
+\end{observation}
+
+library TSA
+
+Check distribution smoothing. 
+
+locator $->$ reading points from a graph
+
+which.max
+
+You can also use this (frequencies) to detect the seasonality of the data.
+
+To test which peaks are significant is quite hard. 
+
+
+\section{Large sample theory (estimation of $\mu, \gamma, \rho$ and $ \alpha$)}
+
+\vskip1cm
+
+
+${\bf X} = (X_{n, 1}, \dots, X_{n,k}) : \Omega \rightarrow \R^k$ random vectors, $n \in \N$.
+
+Recall ${\bf X}_n \rightarrow^d {\bf X}$ if $P(X_n \leq {\bf x}) \rightarrow P({\bf X} \leq {\bf x})$ for all ${\bf x} \in \R^k$ in which ${\bf t} \rightarrow P({\bf X} \leq {\bf t})$ is continous. 
+
+${\bf X}_n \rightarrow^p {\bf X}$ if for all $\epsilon > 0 \lim_{n \rightarrow \infty} P(|X_n - {\bf X}| > \epsilon) = 0$.
+ 
+${\bf X}_n \rightarrow^{L_p} {\bf X}$ if $||X_n - {\bf x}||^p \rightarrow 0$
+
+${\bf X}_n \rightarrow^{a.s.} {\bf X}$ if ${\bf P}({\bf X}_n \rightarrow {\bf X}) = 1$
+
+$a.s. \Rightarrow P$
+
+$L_p \Rightarrow P$
+
+$P \Rightarrow d$
+
+\begin{theorem} (Portmontean)
+The following are equivalant
+\begin{enumerate}
+\item ${\bf X}_n \rightarrow^d {\bf X}$
+\item $E f({\bf X}_n) \rightarrow Ef({\bf X})$ $f: \R^k \rightarrow \R$ continous, bounded 
+\item $P({\bf X}_n \in B) \rightarrow p({\bf X} \in B)$ for all $B$ Borel set in $\R^k$, $P({\bf X} \in \delta B) = 0$
+\item $\limsup_n{P({\bf X} \in F)} \leq P({\bf X} \in F)$ for all closed sets $F \subset \R^k$
+\item $\liminf_n{P({\bf X} \in G)} \ni P({\bf X} \in G)$ for every open set $G \subset \R^k$
+\item $E e^{i<t, {\bf X}_n>} \rightarrow E e^{i<t, {\bf X}>}$ for all ${\bf t} \in \R^k$
+\end{enumerate}
+\end{theorem}
+
+\begin{excercise}
+${\bf X}_n \rightarrow^d {\bf X}, {\bf Y}_n \rightarrow^p {\bf Y}$ on the same probability space, then $({\bf X}_n, {\bf Y}_n) \rightarrow^p ({\bf X}, {\bf Y})$
+\end{excercise}
+
+\begin{excercise}
+${\bf X}_n \rightarrow^d {\bf X}, {\bf Y}_n \rightarrow^d {\bf Y}$ on the same probability space, then show by counterexaple that we do not need to have $({\bf X}_n, {\bf Y}_n) \rightarrow^d ({\bf X}, {\bf Y})$.
+\end{excercise}
+
+\begin{theorem} (continous mapping theorem)
+Assume $y: \R^k \rightarrow \R^m$ is measurable and continous on the set $C \subset \R^k$ and $P({\bf X} \in C) = 1$, then 
+$${\bf X}_n \rightarrow {\bf X} \Rightarrow g({\bf X}_n) \rightarrow g({\bf X})$$ for measures $d, P$, and $a.s.$
+\end{theorem}
+
+
+
+\begin{lema}
+Assume ${\bf X}_n \rightarrow^d {\bf X}, {\bf Y}_n \rightarrow^p C$ on the same probability space, then $({\bf X}_n, {\bf Y}_n) \rightarrow^d ({\bf X}, C)$.
+\end{lema}
+
+\begin{excercise}
+Assume ${\bf X}_n \rightarrow^d {\bf X}$ and ${\bf Y}_n \rightarrow^d {\bf C}$ on the same probabllity space. Then
+\begin{enumerate}
+\item ${\bf X}_n + {\bf Y}_n \rightarrow {\bf X} + {\bf C}$ for $k = m$
+\item ${\bf X}_n  {\bf Y}_n \rightarrow {\bf X}  {\bf C}$ for $k = m$ or $k = 1$ or $m = 1$
+\item ${\bf X}_n / {\bf Y}_n \rightarrow {\bf X} / {\bf C}$ for $k = 1$ and $c \neq 0$
+\end{enumerate}
+\end{excercise}
+
+\begin{proposition} (1st about approximation)
+${\bf X}_n \rightarrow^d {\bf X}, {\bf X}_n - {\bf Y}_n \rightarrow^p 0 \Rightarrow {\bf Y}_n \rightarrow^p {\bf X}$.
+\end{proposition}
+\proof
+${\bf Y}_n = {\bf X}_n + ({\bf Y}_n - {\bf X}_n) \rightarrow^d {\bf X} + 0$ and this is enough according to the previous excercise.
+% \ref
+\endproof
+
+\begin{excercise}
+${\bf Y}_n \rightarrow^d C \Leftrightarrow {\bf Y}_n \rightarrow^p C$ for $C \in \R^n$.
+\end{excercise}
+
+\begin{proposition} (2nd about approsimation)
+Assume 
+\begin{enumerate}
+\item ${\bf Y}_{n,j}\rightarrow^d {\bf Y}_j, n \rightarrow \infty$
+\item ${\bf Y}_j \rightarrow^d {\bf Y}, j \rightarrow \infty$
+\item $\lim_j \limsup_{n\rightarrow \infty}{P(|X_n - Y_{n,j}| > \epsilon)} = 0$ for all $\epsilon > 0.$
+\end{enumerate}
+Then ${\bf X}_n \rightarrow^d {\bf Y}$.
+\end{proposition}
+\proof
+For all $F $ closed $\limsup_n{P({\bf X}_n \in F)} \leq P({\bf Y} \in F)$ is enough. $F^\epsilon = \{y | \inf_{x\in F}||{\bf y} - {\bf x}|| \leq \epsilon \}$ closed set. Then $P({\bf X}_n \in F) \leq P(Y_{n j} \in F^\epsilon) + P(||Y_{n j} - X_n|| > \epsilon)$. We take $\limsup{P({\bf X}_n \in F)} \leq P(Y_j \in F^\epsilon) + \limsup{P(|X_n - Y_{n j}| > \epsilon)}$. We apply $\limsup_{j\rightarrow \infty}$ and get $\limsup{P({\bf X})_n \in F} \leq P(Y \in F^\epsilon)$.
+
+If we let $\epsilon \rightarrow 0$ then the right side converges to $P(Y \in F)$ because the probability is continous with respect to decreasing the segment of sets ($\bigcap_{\epsilon > 0} F^\epsilon = F$).
+\endproof
+
+\begin{example}
+Assume estimator $T_n, S_n$ staisfy $\sqrt{n}(T_n - \theta) \rightarrow^d N(0, \sigma^2)$ and $\sqrt{n}\frac{T_n - \theta}{S_n} \rightarrow^d N(0,1)$ (by escercise 3).
+%ref
+Then approximately $(q - \alpha) 100 \%$ confidence interval for $\theta$ is $(T_n - \frac{S_n}{\sqrt{n}}Z_{\alpha/2},T_n + \frac{S_n}{\sqrt{n}}Z_{\alpha/2})$.
+\end{example}
+
+\begin{theorem} (Strong law of large numbers )
+Assume $(X_n)$ iid withfinite mean $\mu$. Then $\overline{X}_n \rightarrow^{a.s.} \mu$ .
+\end{theorem}
+
+
+\begin{theorem} (Central limit theorem - Levy)
+Assume $(X_n)$ iid with finite second moment $\sigma^2$. Then $\sqrt{n}(\overline{X} - \mu) \rightarrow^d N(0, \sigma^2)$.
+\end{theorem}
+
+
+\begin{observation}
+This also holds for random vectors. There is a stronger (Lindeberg) version of the theorem, that allows $(X_n)$ to be independant but not necessarilly equally distributed.
+\end{observation}
+
+
+The question is: What if we have dependance? Can we still have the CLT?
+
+Time series $(X_t)$ is ${\bf m-dependant}$ if for all $t \in \Z$ falimies of random variables $\{\dots, X_{t-1}, X_t\}$ and $\{X_{t + m + 1}, \dots\}$ are independant. 
+
+\begin{excercise}
+If $(Z_t) \sim IID$ and $X_t = Z_t + \theta Z_{t-1}$ is a MA(1) process, show $(X_t)$ is 1-depndent.
+\end{excercise}
+
+\begin{excercise}
+Show $(X_t)$ is 0-dependant $\Leftrightarrow$ $X_t$-s are independent random variables.
+\end{excercise}
+
+\begin{theorem} (CLT for m-dependant sequences)
+Assume $(X_t)$ is strictly stationary (otherwise we have no chance), m-independant with mean $0$, and with finite variance. Then 
+$$\sqrt{n}\;\overline{X}_n \rightarrow^d N(0, \sum_{n = -m}^m \gamma_X(h))$$
+\end{theorem}
+Ask if $\overline{X}_n \rightarrow^p 0$ and how fast. Than $Var\sqrt{n} \; \overline{X}_n = Var(\frac{X_1 + \dots + X_n}{\sqrt{n}}) =$
+
+$= \frac{1}{n} \sum_{i,j = 1}^n Cov(X_i, X_j) = \frac{1}{n} \sum_{i,j = 1}^n \gamma(i-j) = \frac{1}{n} \sum_{h = -n + 1}^{n-1}(n - |h|)\gamma_X(h)$.
+
+Assume $\sum_{h=-\infty}^\infty |\gamma(h)| < \infty$. Then the above equation $\rightarrow \sum_h \gamma_X(h)$ as $n \rightarrow \infty$. We see this by the dominated convergence theorem (we can therefore substitate $\lim$ and $\sum$). 
+
+By the Chebishev inequality $X_n$ is really converging to $0$ in probability: $P(|\overline{X}_n - 0| > <\epsilon ) = \frac{Var \overline{X}_n}{\epsilon^2} = \frac{q/n Var \sqrt{n}\; \overline{X}_n}{\epsilon^2} \rightarrow 0$
+
+\proof
+Note $\gamma(h) = 0$ for $|h| > n$ (there is no dependance). We showed $\sqrt{n} \; \overline{X}_n = n Var \overline{X}_n \rightarrow \sum_{h=-m}^m \gamma(h)$. Fix $k > 2m$, $r = \lfloor n/k \rfloor$. $r k \leq n, n - rk < k$. 
+
+$\overline{X}_n = $ average of $X_i, i = 1,\dots,n$.
+
+$X_1, \dots, X_{k-m}, X_{k-m+1}, \dots, X_{k}, X_{k+1}, \dots, X_{2k-m}, X_{2k-m+1},\dots,X_{2k}, \dots \dots, X_{rk-m+1}, \dots, X_{r_k}, X_{rk+1},\dots,X_{n}$. The sizes of these parts with $\dots$ are $k-m, m, k-m, \dots, m, \leq k-1$ if $\neg k | n$. We denote tnem with $B_{k,1}, R_{k,1}, \dots, B_{k, r}, R_{k, r}$. We introduce $Y_{n,k} = \frac{1}{\sqrt{n}} (B_{k, 1} + \dots, B_{k,r})$. $\sqrt{n} \; \overline{X}_n = \frac{1}{\sqrt{n}} (X_1 + \dots X_n) = Y_{n, k} + $ remainder, which equals the sum of $R_{k,j}-$s divided by $\sqrt{n}$. Nothe that $B_{k,i}-$s are IID with finite variance (calculated before the proof)!! 
+
+Because of this $Y_{n,k} = \frac{1}{\sqrt{n}} \sqrt{kr} \frac{1}{\sqrt{k}} \frac{1}{\sqrt{r}} (B_{k,1} + \dots B_{k,r})$. The $ \frac{1}{\sqrt{r}} (B_{k,1} + \dots B_{k,r}) \rightarrow^d N(0, Var B_{k,1})$ (all have the same variance). The $\frac{1}{\sqrt{n}} \sqrt{kr} \rightarrow 1$. $Var B_{k,1} = Var(X_1, \dots + X_{k-m}) = \sum_{|h| \leq m}(k-m-|h|)\gamma(h)$.
+
+Together we get $Y_{n,k} \rightarrow N(0, \sum_{|h| \leq m}(\frac{k-m-|h|}{k})\gamma(h)) := V_k$. When we let $k \rightarrow \infty$ each of $(\frac{k-m-|h|}{k} \rightarrow 1$. Therefore $Y_k \rightarrow^d N(0, V)$ as $k \rightarrow \infty$ where $V = \sum_{n = -m}^m \gamma(h)$. 
+
+It remains to show that $\sqrt{n}\; \overline{X}_n \approx Y_{n,k}$ in the sense of preposition (5). $\lim_k \limsup_n P(|\sqrt{n}\; \overline{X}_n - Y_{n, k}| > \epsilon) \leq \lim_k \limsup_n \frac{Var(1/\sqrt{n}(R_{k,1} + \dots R_{k,r}))}{\epsilon^2}$. $R_{k,i}$ are independent tas well and similar to $B_{k,i}$. So $Var(R_{k,i}) = \sum_{|h| \leq m}(m- |h|)\gamma(h)$ for $r = 1, \dots, r-1$. $Var(R_{k,r}) = \sum_h ((n -rk) + m - |h|)\gamma(h)$. 
+
+The $\lim_k \limsup_n \frac{Var(1/\sqrt{n}(R_{k,1} + \dots R_{k,r}))}{\epsilon^2} \leq \lim_k \limsup_n (r-1) \sum_h \frac{m \gamma(h)}{n} + \sum_h \frac{m+k}{n}|\gamma(h)|$. Bothi things tend to $0$. Therefore $\sqrt{n}\; \overline{X}_n \rightarrow^d Y$. 
+\endproof
+
+
+All our theorems in the sequal can be proved using a similar (same) argument (called {\bf large block/small block}).
+
+Assume $(X_t)$ satisfies the conditions of the theorem and $E X_t = \mu \neq 0$. It is clear that $Y_t = X_t - \mu$ satisfies the same conditions and $\sqrt{n} (\overline{X}_n - \mu) = \sqrt{n}\; \overline{Y}_n \rightarrow^d N(0,V)$. Observe $\gamma_X(h) = \gamma_Y(h)$. This is how we use the theorem. $v = \sum_{|h| \leq m} \gamma(h)$.
+
+
+Now we know a CLT, that does not involve IID data. So $(1 - \alpha) 100 \%$ confidence interval for $\mu$ is 
+$(\overline{X}_n +- \sqrt{\frac{v}{n}}Z_{\alpha/2})$. 
+
+\subsection{Estimating the mean of MA(q) processes}
+
+\begin{example} (MA(1))
+(assume normal stuff) $\Rightarrow$ $ X_t$ is strictly stationary and 1-dependent, remember the $\gamma_X(h)$. Theorem 
+%ref
+(8) now proves $\sqrt{n} \; \overline{X}_n \rightarrow^d N(0, \sigma^2 (1 + \theta^2 + 2\theta))$.
+\end{example}
+
+\begin{defn}
+Assume $Z_t \sim WN$, $\theta_i$ are real numbers and $X_t = Z_t + \theta_1 T_{t-1} + \dots + \theta_q + Z_{t-q}$. We ask $\theta_q \neq 0$. This is MA(q).
+\end{defn}
+
+\begin{excercise}
+Show that MA(q) process has auto correlation function 
+$\gamma_X(h) = 0$ if $|h| > q$ else $\sigma^2 \sum_{j = 0}^{q - |h|}\theta_k \theta_{j + |h|}$ where $\theta_0 = 1$. The mean of the process is $0$.
+\end{excercise}
+
+\begin{excercise}
+Show that MA(q) process satisfies the following:
+$\sum_{|h| \leq q} \gamma(h) = \sigma^2(\sum_{j = 0}^q \theta_j)^2$. In particular
+$\sqrt{n } \; \overline{X}_n \rightarrow^d N(0, \sigma^2(\sum_{j=0}^1 \theta_j)^2)$ if $(Z_t) \sim IID(0, \sigma^2)$.
+
+If $Y_t = \mu + X_t, X_t \sim MA(q)$ with iid noise 
+$\sqrt{n}(\overline{Y} - \mu) \rightarrow^d N(0, \sigma^2(\sum_{j=0}^1 \theta_j)^2)$.
+\end{excercise}
+
+\subsection{Estimating the mean of linear processes}
+
+MA is just a special case of linear processes! 
+
+\begin{proposition}
+Assume $(X_t)$ is weakly stationary with mean $\mu$.
+\begin{enumerate}
+\item if $\gamma(h) \rightarrow 0 \Rightarrow Var(\overline{X}_n) \rightarrow 0$ and $\overline{X}_n \rightarrow^p \mu$.
+\item if $\sum_{h = -\infty}^\infty\gamma(h) < \infty \Rightarrow n Var \overline{X}_n \rightarrow \sum_h \gamma_X(h)$
+\end{enumerate}
+\end{proposition}
+\proof
+(2) was already shown before (when showing the dominated convergence)
+(1) $Var \overline{X}_n = \frac{1}{n^2} \sum_{|h| \leq m} (n - |h|)\gamma(h) \leq \frac{1}{n} \sum_h |\gamma(h)| \rightarrow 0$, since $|\gamma(h)| \rightarrow 0$ (Cesaro mean). 
+
+Because $\overline{X}_n$ is unbiased the Chebishov inequality shows $P(|\overline{X}_n - \mu| > \epsilon) \rightarrow 0$
+$\Rightarrow \overline{X}_n \rightarrow^p \mu$.
+\endproof
+
+\begin{theorem}
+Assume $(Z_t) \sim IID(0, \sigma^2), (\Psi_j)$ satisfies $\sum_{j = -\infty}^\infty \Psi_j< \infty, \sum_j \Psi_j \neq 0$ the the stohastic process satisfies $X_t = \mu ' \sum_j \Psi_j Z_{t-j}$
+$\sqrt{n}(\overline{X}_n - \mu) \rightarrow^d N(0, V), V = \sum_{h=-\infty}^\infty \gamma(h)$ .
+\end{theorem}
+
+Approx $95\%$ confidence interval for $\mu$ is $(\overline{X}_n +- 1.96 \sqrt{\frac{v}{n}})$. Of course $\gamma$ is unknown, so we have to estimate it. But we cannot estimate all of them. We use $(\overline{X}_n +- 1.96 \sqrt{\frac{\hat{v}}{n}})$ where $\hat{v} = \sum_{|h| \leq n} \frac{(n - |h|)}{n}\hat{\gamma}(h)$.
+
+
+\begin{excercise}
+Find the asimptotic variance $V$ for $\sqrt{n} \overline{X}_n$ in the case of AR(1) (normal with), $(Z_t) \sim IID(0, \sigma^2)$.
+\end{excercise}
+
+Condition $\sum_h |\gamma(h)| < \infty$ is called short range dependance condition. CLT can be expanded from m-dependant and linear processes to more general stationary processes using the concept of {\bf mixing}. 
+
+\subsection{Estimation of $\gamma, \rho, \alpha$ (for general linear processes)}
+
+$\hat{\gamma}(h) = 1/n \sum_{t = 1}^{n - |h|} (X_t - \overline{X}_n)(X_{t+h}-\overline{X}_n)$
+
+$\hat{\rho}(h) = \hat{\gamma}(h) / \hat{\gamma}(0)$. $\hat{\Gamma}_n$ as before and $\hat{R}_n = \frac{\hat{\Gamma}_n}{\hat{\gamma}(0)}$. One can show all are positive semidefinite and they are consistent for linear processes.
+
+\begin{theorem}
+Assume $Z_t \sim IID(0, \sigma^2), EZ_t^4 < \infty$ and $\sum_j |\Psi_j| < \infty$ then the weakly stationary process 
+$X_t = \mu ' \sum_j \Psi_j Z_{t-j}$
+satisfies
+$\sqrt{n} [vector(\hat{\rho}1:h) - vector(\rho 1:h)] \rightarrow^d N(0,W)$, where $W$ is the covariance matrix given by Bartlett formula:
+$w_{i j} = \sum_{k = -\infty}^\infty [\rho(k + i)\rho(k+j) + \rho(k-i)\rho(k+j)-2\rho(i)\rho(j)-w\rho(i)\rho(k)\rho(k+j) - 2\rho(j)\rho(k)\rho(k+i)]$.
+
+\end{theorem}
+
+
+\begin{observation}
+A similar theorem holds for $\hat{\gamma}-$s. 
+\end{observation}
+
+
+\begin{example}(IID case)
+Assume $(X_t) \sim IID$, $EX_t^4 < \infty \Rightarrow \rho_X(h) = 0$ for $h \neq 0$. Bartlett-s formula $\Rightarrow$
+$w_{ij} = \delta_{ij}$ (Cronichles?? delta).
+
+So in this case $W = I$ (identity). Asimptotically speaking $\hat{\rho}(j) \sim N(0, 1/n), j=1, \dots, h$ and independent from each other! 
+\end{example}
+
+This is good, because the theorem suggests a test with null hypotesis $H_0: (X_t)$ is $ IID$.
+
+Tests:
+\begin{enumerate}
+\item Visual test: approximately $95\%\; \hat{\rho}(i), i = 1, \dots, h$ should fall in $ (-1.96/\sqrt{n},1.96/\sqrt{n})$. If $h = 40$ there should be at most $2-3$ of these guys outside of the inerval. And none should be too far from $0$.
+\item Portmanteau test: $H_0: \rho(k) = k, k = 1, \dots, h$, since $\sqrt{n}\hat{\rho}(i) \approx^{iid} N(0,1), i = 1, \dots, h$. Than $Q_{n,h} = n \sum_i \hat{\rho}(i)^2 \rightarrow^d \chi^2(h)$. We reject that if $Q_{n,h} > \chi^2_{1-\alpha}(h)$.
+\item Ljung Box test: $~Q_{n, h} = n \sum_i \frac{n+2}{n-i}\hat{\rho}(i)^2 \rightarrow^d \chi^2(h)$ under $H_0$, which converges faster (empiricaly tested)
+\end{enumerate}
+
+\begin{example} (MA(q) process)
+$Z_t \sim IID(0, \sigma^2)$. Bartlett-s formula gives for $k > q$ that 
+$\sqrt{n} (\hat{\rho}(k) - 0) \rightarrow N(0, 1 + 2\rho(1)^2 + \dots + 2\rho^2(q))$.
+
+Unfortunately $\hat{\rho}(k)$ are {\bf not} asymptotically independent any more. Therefore graph of $\hat{\rho}-$s is hard to interpret.
+\end{example}
+
+Recall : if $(X_t)$ is weakly stationary with mean $0$ and $\gamma(h) \rightarrow 0$ than all $\Gamma_n$ are regular and 
+$\alpha(h) = \varphi_{n,k}$, where $\Pi_{n} X_{n+1} = \varphi_{11} + \dots + \varphi_{n n}X_1$ and $\varphi -$s solve the exuation, as before.
+% ref
+To estimate $\alpha$ we set $\hat{\alpha}(h) = \hat{\varphi}_{nn}$, the solutions of the same equations with $\Gamma, \gamma$ replaced with $\hat{\Gamma}, \hat{\gamma}$. 
+
+Asymptotic normality of $\hat{\gamma}-$s and Slutsky imply $\alpha -$s are aysmptotically normal, but the covariance matrix is even more complicated.  
+
+\vskip1cm
+
+More R:
+
+library stats
+
+library TSA $->$ good, because it does not plot $\rho(0)$
+
+Box.test $->$ Portmanteau test. We still have to specify $h$. If $p-$value small we reject the hypotesis.
+parameter type = "Ljung" $->$ Ljung test
+
+
+
+
+
+
+
+
+
+
+
+\end{document} 

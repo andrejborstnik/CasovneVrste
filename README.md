@@ -11,4 +11,4 @@ Približen seznam opravil:
 * Funkcije z več predpisi zapisati v lepši obliki
 * Dodati presledke/prelome vrstic na primerna mesta
 * Spremeniti ukaze za `definicijo` in podobne, da se preštevajo, kot na predavanjih (vsak zase po poglavjih)
-* Popraviti `~ = \tilde`, da se ne pojavi nad naslednjo črko
+* Popraviti, da se imena mer za limito pojavijo nad puščico. Podobno za `lim` in podobne.
