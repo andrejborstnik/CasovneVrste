@@ -1,0 +1,2912 @@
+\documentclass[12pt,a4paper, notitlepage]{book}
+% ukazi za delo s slovenscino -- izberi kodiranje, ki ti ustreza
+\usepackage[english]{babel}
+%\usepackage[cp12500]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsfonts, amsthm}
+\usepackage{bbm}
+
+
+\usepackage{hyperref}
+ 
+\usepackage{url}
+\usepackage{graphicx}
+\graphicspath{{./Slike/}}
+%\usepackage[normalem]{ulem}
+\usepackage[dvipsnames,usenames]{color}
+
+% Knjižnice + ukazi za solution env.
+\usepackage{thmtools}
+
+\declaretheoremstyle[
+spaceabove=6pt, spacebelow=6pt,
+headfont=\normalfont\bfseries,
+notefont=\mdseries, notebraces={(}{)},
+bodyfont=\normalfont,
+postheadspace=1em,
+headpunct={},
+qed=$\blacktriangleleft$,
+numbered=no
+]{solstyle}
+\declaretheorem[style=solstyle]{solution}
+\declaretheorem[style=solstyle]{hint}
+
+
+% Za risanje diagramov
+\usepackage[all]{xy}
+
+
+
+
+
+
+\textwidth 15cm
+\textheight 24cm
+\oddsidemargin.5cm
+\evensidemargin.5cm
+\topmargin-5mm
+\addtolength{\footskip}{10pt}
+\pagestyle{plain}
+\overfullrule=15pt % oznaci predlogo vrstico
+\setlength{\parindent}{0pt}
+
+% Ukazi za barvanje
+\definecolor{lightred}{RGB}{255,150,150}
+\usepackage{soul}
+\usepackage{color}
+\newcommand{\hlc}[2][yellow]{ {\sethlcolor{#1} \hl{#2}} }
+\newcommand{\hlcr}[1]{\hlc[lightred]{#1}}
+
+% ukazi za matematicna okolja
+\theoremstyle{definition} % tekst napisan pokoncnow
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}[definition]{Example}
+\newtheorem{exercise}[definition]{Exercise}
+\newtheorem{observation}[definition]{Observation}
+\newtheorem{remark}[definition]{Remark}
+
+
+\theoremstyle{plain} % tekst napisan posevno
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{claim}[definition]{Claim}
+\newtheorem{proposition}[definition]{Proposition}
+
+
+
+
+% za stevilske mnozice uporabi naslednje simbole
+\newcommand{\R}{\mathbb R}
+\newcommand{\N}{\mathbb N}
+\newcommand{\Z}{\mathbb Z}
+\newcommand{\C}{\mathbb C}
+\newcommand{\Q}{\mathbb Q}
+\newcommand{\F}{\mathbb F}
+
+\newcommand{\Fc}{\mathcal{ F}}
+\newcommand{\Gc}{\mathcal{ G}}
+
+
+% Dodatni operatorji
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Sd}{sd}
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\Corr}{Corr}
+\DeclareMathOperator{\Acf}{acf}
+\DeclareMathOperator{\Pacf}{pacf}
+\DeclareMathOperator{\Aic}{AIC}
+\DeclareMathOperator{\Aicc}{AICC}
+\DeclareMathOperator{\Bic}{BIC}
+\DeclareMathOperator{\Loglikelihood}{LogLikelihood}
+
+
+% Operatorji za porazdelitve/modele
+\DeclareMathOperator{\Unif}{Unif}
+\DeclareMathOperator{\No}{N}
+\DeclareMathOperator{\Wn}{WN}
+\DeclareMathOperator{\Iid}{IID}
+\DeclareMathOperator{\Arma}{ARMA}
+\DeclareMathOperator{\Ar}{AR}
+\DeclareMathOperator{\Ma}{MA}
+\DeclareMathOperator{\Inar}{INAR}
+\DeclareMathOperator{\Arima}{ARIMA}
+\DeclareMathOperator{\Farima}{FARIMA}
+\DeclareMathOperator{\Sarima}{SARIMA}
+\DeclareMathOperator{\Garch}{GARCH}
+\DeclareMathOperator{\Arch}{ARCH}
+\DeclareMathOperator{\Sv}{SV}
+
+
+
+
+% Ukazi za nove in pomembne pojme
+\newcommand{\New}[1]{ {\bf \hlcr{#1} } }
+\newcommand{\Important}[1]{ {\it \hlc{#1} } }
+
+
+% Ukazi, ki so zgolj estetskega pomena
+\newcommand{\QuestionStart}[1]{ {\it \sc #1} } % Npr. za "Main Question:"
+
+
+
+% Naslov
+\title{Time Series, Lecture Notes}
+\author{prof. Bojan Basrak}
+\date{2015/16 }
+
+
+
+% Ukaz za footnote brez številk
+\makeatletter
+\def\blfootnote{\xdef\@thefnmark{}\@footnotetext}
+\makeatother
+
+\begin{document}
+
+\maketitle
+
+\blfootnote{ \url{https://github.com/andrejborstnik/CasovneVrste}}   
+
+\newpage
+
+
+
+\tableofcontents
+
+
+\chapter{Basic models and terminology}
+
+Stohastic process $(X_i)_{i \in I}$ on the same probability sapace.
+
+Time series is a sequence of observation, collected over time - prices of stock, level of the sea, ... $ =  (x_i)_{i = 1, \dots, n}$
+Ideally at equidestant time points. 
+
+It is also a stohastic process indexed in discrete time, i.e.  $I = \{1, \dots, n\}, \N, \Z$ (model). Typically $I \subset \Z$.
+We will be looking at final dimensional distributions of $(X_t)_{t \in \Z}$: family of distributions of a random vector
+$(X_{t_1}, \dots, X_{t_k})$, $t_1 < \dots < t_k$.
+They determine the distribution of the whole process $(X_t)_{t \in \Z}$.
+\[(X_t)_{t \in \Z}: \Omega \rightarrow \R^{\Z} \].
+
+\begin{example}
+\begin{itemize}
+\item $X_i \overset{i.i.d.}{\sim} F$ is a time series (model). But is independent of time (bad).
+\item $X_i \overset{i.i.d.}{\sim} F$, $S_0 = 0$ and $S_n = S_{n - 1} + X_n, n\geq 1$ - random walk. Not interesting, because the model is constantly changing. 
+\end{itemize}
+\end{example}
+
+\begin{definition}
+For a time series $(X_t){t\in \Z}$, satisfying $\Var(X_t) < \infty$ we define  the \New{autocovarinace function} $\gamma_X : \Z \times\Z \rightarrow  \R$
+\[ \gamma_X(s,y) = \Cov(X_s, X_t) = \E[(X_s - \E[X_s])(X_t - \E[X_t])] . \]
+\end{definition}
+
+\begin{definition}
+Time series $(X_t)_t$ is \New{weakly stationary} (by default kind of stationary= weakly stationary) if 
+\begin{enumerate}
+\item $ \E [|X_t|^2]< \infty$, for all $t$
+\item $ \E [X_t] = m$ (constant), for all $t$
+\item $ \Cov(X_s, X_t) = \Cov(X_{s+h},X_{t+h})$, $h, s, t \in \Z$
+\end{enumerate}
+Covariance represents dependance of the variables. 
+\end{definition}
+
+\begin{observation}
+For weakly stationary time series the function $\gamma_X$ is actually a function of one variable only. 
+$\gamma_X : \Z \rightarrow \R$,
+\[ \gamma_X(h) = \Cov(X_h, X_0)\].
+
+This is a good definition, because $ \Cov(X_s, X_t) = \Cov(X_{s-t},X_0) = \gamma_X(s-t)$. 
+\end{observation}
+
+
+\begin{definition}
+The \New{autocorrelation function} of weakly stationary time series $(X_t)$ is a function
+$\gamma_X : \Z \rightarrow [-1, 1]$
+\[ \rho_X(h) = \frac{\gamma_X(h)}{\gamma_X(0)} = \Corr(X_{t+h},X_t) . \]
+(we assume $\gamma_X(0) > 0$). If it is $0$ everything is a constant and we have no interest in observing it.
+\end{definition}
+
+\begin{definition}
+Time series $(X_t)$ is \New{strictly (strongly) stationary} if the distribution of a random vector $(X_{t_1 + h}, \dots X_{t_k + h})$ does not depend on $h$ for every $k\in \N, t_1, \dots, t_k \in \Z $.
+\end{definition}
+
+\begin{exercise}
+Strict stationarity + $ \E [|X|^2] < \infty \Rightarrow$ weak stationarity.
+\end{exercise}
+\
+
+
+For a given time series we define a family 
+$\{  F_{\bf t} \}_{\bf t \in T}$, where $T = \{(t_1, \dots, t_k), t_1 < \dots < t_k, k \in \N\}$.
+$F_{\bf t}({\bf X}) = P(X_t \leq X_1, \dots, X_{t_k \leq x_k}), {\bf x} = (x_1 \dots, x_k), {\bf t} = (t_1, \dots t_k)$
+$F_{ \bf t}$ determines the distribution of the time series
+
+
+\begin{theorem} 
+The family $\{F_{\bf t}\}_{\bf t \in T}$ is a class of f.d.d (final dimension distribution) function of a time series
+$\iff $
+for each $k, {\bf t } \in T$:
+\[ \lim_{x_i \rightarrow \infty} F_{\bf t}({\bf x}) = F_{\bf t(i)}  ({\bf x(i)}) , \] 
+for every ${\bf x(i)} \in R^{k-1} = (x_1,\dots,x_{k-1},x_{k+1},\dots, x_k)$ and the same for ${\bf t}$ .
+\label{th:1}
+\end{theorem}
+\proof
+No proof, very technical. 
+$\rightarrow$ is very easy to prove. It is enough to observe the probability is continuous with respect to growing events.
+\endproof
+
+
+
+\begin{definition}
+Random vector ${\bf Y } = (Y_1, \dots, Y_k)^T$ has a multivariate normal (Gaussian) distribution if there exists a 
+vector $a \in \R^k$ and a matrix $B \in M_{k\times m}$ and a random vector ${\bf X} = (X_1, \dots, X_m)^T$ such that $X_i 
+\overset{i.i.d.}{\sim}  N(0,1)$, such that ${\bf Y} = a + B {\bf X}$.
+
+In this case we know that $\E [ {\bf Y} ] = (\E [Y_1], \dots, \E [Y_k])^T = (a_1, \dots, a_k)$ and the covariance matrix of ${\bf Y}$ is given by $\Sigma_{\bf Y} = B B^T$.
+We write $Y \tilde N(a, \Sigma_{\bf Y})$.
+
+\end{definition}
+
+If $ \det (\Sigma_{\bf Y}) > 0$, ${\bf Y}$ has density and 
+\[ f_{\bf Y}({\bf y}) = (2 \pi)^{-k/2} \frac{1}{\sqrt{det(\Sigma_{\bf Y} ) } } e^{- \frac{ \langle{\bf y} - a, \sum^{-1}({\bf y} - a)\rangle}{2}}. \]
+
+\begin{definition}
+A random process $(X_t)_t$ is G aussian (normal) if its f.d.d.-s are all multivariate normal.
+\end{definition} 
+
+
+\begin{exercise}
+Assume $(X_t)_t$ is a gaussian time series with constant expectation. Then the autocovariance function $\gamma_X$ determines all f.d.d-s.
+\end{exercise}
+\begin{hint}
+If we look at the vector $(X_1, \dots)$ we see it is distributed normally. We can read the covariance matrix form $\gamma_X$, and this is all we need to show.
+\end{hint}
+
+
+\begin{exercise}
+Assume $(X_t)_t$ is a gaussian time series and weakly stationary. Then it is strictly stationary as well. 
+\end{exercise}
+
+
+\begin{example}
+A weakly stationary time series $(X_t)$ is called  \New{ white noise } if $\E [X_t] = 0$ for all $t$ and 
+$$\gamma_X(h) =  \begin{cases} \sigma^2 ( = \Var(X_t)) & ,h = 0 \\
+			0 & , h \neq 0 \end{cases}
+$$
+We write $(X_t) \sim WN(0, \sigma^2)$.
+
+Clearly if $(X_t)$ i.i.d. and $ \E [X_t] = 0$ and $ \Var (X_t) < \infty \Rightarrow (X_t) \sim WN(0, \sigma^2)$.  
+\end{example}
+
+
+w w
+\begin{exercise}w              aw              w a
+Find an example of a strictly stationary white noise, which is not an i.i.d. sequence.
+\end{exercise}
+\begin{hint} Imagine 
+\[ Y \sim \left( \begin{array}{cccc} -2 & -1 & 1 & 2 \\  1/4 &1/4 & 1/4 &1/4 \end{array} \right) , \]
+, \[ \epsilon_t  \overset{i.i.d.}{\sim}  \left( \begin{array}{cc} -1& 1 \\ 1/2 &1/2 \end{array} \right) . \]
+ \[ X_t = Y \epsilon_t . \]
+
+
+ We calculate 
+w$ \gamma_X$. It is equal to $ \Cov(X_h, X_0) = \E(X_h X_0) = \E(\epsilon_h \epsilon_0 Y^2) = 0$.
+\end{hint}
+
+\begin{observation} We will use $(X_t) \sim IID(0, \sigma^2)$ \end{observation}
+wd            w    
+\begin{exercise}
+Find an example of white noise, which is not even strictly stationary.
+\end{exercise}
+
+\begin{example} (random walk)
+Assume $(X_t) \sim IID(\mu, \sigma^2)$, $X_0$ is independent of $(X_t)_{t \geq 1}$ and $ \Var(X_0) < \infty$.
+$ S_0 = X_0$, $S_n = X_0 + \dots + X_n$, then $(S_n)$ cannot be weakly stationary, unless $ \mu = \sigma = 0 $.
+Clearly if $\mu \neq 0$ then $ \E[S_n] = \E[X_0] + n\mu$ is changing!
+If $\mu = 0$ and $\sigma^2 > 0$, then 
+\[ \gamma_S(h,h) = \Cov(S_h, S_h) = \Var(S_h) = \Var(X_0) + n \sigma^2, \]
+ which is growing. So we cannot have a stationary random walk.
+\end{example}
+
+\begin{observation}
+Definition of stationarity (weak and strong) and functions $\gamma_X, \rho_X$ can be extended to one-sided time series $(X_t)_ {t\geq 0}$. 
+\end{observation}
+
+
+\begin{example}
+Assume $A_1, A_2$ are uncorrelated random variables with expectation $0$ and equal variance $\sigma^2$. Then the time series 
+\[ X_t = A_1 \cos{\nu t} +A_2 \sin{\nu t} \] . $\nu > 0$.
+is $2 \pi / \nu$ periodic and weakly stationary.
+Obviously $ \E[X_t] = 0$ and $\E[X_t^2] < \infty$.
+\begin{align*} \Cov(X_{t+h}, X_t)  = \E[ A_1^2 \cos{\nu t}\cos{t + h} + A_2^2 \sin{\nu(t + h)}\sin{\nu t} ] \\
+= \sigma^2 \cos(\nu (t + h) - \nu t) = \sigma^2 \cos(\nu h). \end{align*}
+There is no $t$ here. So $X_t$ is stationary. 
+
+Just by looking at the sample we cannot know if it is randomly generated. We also do not know if it is stationary (it is $\sin$).
+But it is. So it is difficult to analyze in practice.
+\end{example}
+
+
+\begin{exercise}
+Assume $A, \theta$ are independent random variables. $\Var(A) < \infty$ and $\theta \sim \Unif[0,2\pi]$, $\nu > 0$ then the time series
+\[ X_t = A \cos{( \nu t + \theta )} \] 
+ is weakly stationary. 
+\end{exercise}
+\begin{hint}
+You write the $\cos$ using the trigonometric formula and notice it is the same as in the previous example for 
+$A_1 = A\cos{\theta}$ and $A_2 = A\sin{ - \theta}$.
+\end{hint}
+
+\begin{example} (MA(1))
+Assume $(Z_t) \sim WN(0, \sigma^2), \theta \in \R$
+and 
+\[ X_t = Z_t + \theta Z_{t-1},  t \in \Z. \]
+Process $(X_t)$ is called \New{ moving average of order one} $= MA(1)$ .
+
+Its expectation is clearly $0$. It is also a weakly stationary time series (strongly if $Z_t$ is strongly stationary):
+\begin{align*} \gamma_X(h) =  \Cov(X_{t + h}, X_t) =  \Cov(Z_{t+h} + \theta Z_{t+h-1}, Z_t + \theta Z_{t-1})  \\ = 
+= \begin{cases} \sigma^2(1 + \theta^2)  &, h = 0 \\
+	\theta \sigma^2	& , h = +-1 \\
+		0	& , otherwise \end{cases}
+\end{align*}
+This clearly does not depend on $t$, so $(X_t)$ is weakly stationary. We also observe that $\gamma_X(h) = 0$ for all $|h| \geq 2$. We say that $(X_t)$ has \Important{\ short memory}.
+
+\end{example}
+
+\begin{observation}
+Time series theory makes a distinction between:
+\begin{itemize}
+\item short range dependent models (like MA(1))
+\item long range dependent models
+\end{itemize}
+\end{observation}
+
+
+\begin{example} ($\Ar(1)$)
+Assume $(Z_t) \sim WN(0, \sigma^2)$, $\phi \in \R$ and that $(X_t)$ satisfies 
+\[  X_t = \phi X_{t-1} +Z_t, t \in \Z .  \label{eq:1} .\] 
+
+
+For different values of $X_0$ we can generate different values of $(X_t)$ process. The main question is, if we can (in this setting) find a stationary times series $(X_t)$, which satisfies
+the equation above.
+
+It turns out we cannot always do that. It will depend on $\phi$. $\phi = 1$ gives us a random walk and it is not stationary for non-stationary $(Z_t)$.
+
+If a stationary solution exists it is unique.
+
+Assume $|\phi| < 1$. We can guess the solution by iterating one step backwards. We get:
+\[ X_t = \phi^k X_{t-k} + \phi^{k-1}Z_{t-k} + \dots + Z_t  . \] 
+One can guess that the stationary solution   is $X_t = \sum_{k = 0}^\infty \phi^k Z_{t-k}$, which is a random series. 
+
+Does this series converge? What does this mean for random variables? (which type of convergence?) 
+
+We will show the series is converging a.s. (even absolutely). That will mean $X_t$ is well defined for almost all $\omega$-s. Then it satisfies  
+\ref{eq:1} (check directly) and it is weakly stationary. 
+
+\[ \E[X_t] = \E\left[\left(\sum \phi^k Z_{t-k} \right) \right] = \sum \phi^k \E[Z_{t-k}] = 0 . \] 
+We would like to put the expectation under the sign (but this is not true necessarily). 
+
+For $h \geq 0$: 
+\begin{align*} \gamma_X(h) = \Cov(X_{t +h }, X_t) = \E \left[X_{t+h}X_t \right] \\ 
+= \E \left[ \sum_i \sum_j \phi^i \phi^j Z_{t + h - j} Z_{t + h - i} \right] \\ 
+\overset{interchanging}{=}   \sum_i \sum _j \phi^i \phi^j \gamma_Z(h-i+j). \end{align*}
+(This gives $\sigma^2$ only when $h+j = i$.)
+\begin{align*} = \sum_j \phi^j \phi^{h + j}\sigma^2 = \sigma^2 \phi^h \frac{1}{1 - \phi^2}. \end{align*}
+
+By symmetry we get (for $h \leq 0$):
+\[ \gamma_X(h) = \sigma^2 \frac{\phi^{|h|}}{1 - \phi^2} . \]
+
+This is decreasing exponentially fast! We used Lebesgue dominated convergence.
+
+
+When $\phi = 1$ we cannot find a stationary solution at all:
+\[X_t = X_{t-1} + Z_t = \dots = X_0 + Z_1 + \dots + Z_t. \]
+ Meaning $(X_t)$ is a random walk. 
+
+Assume $\Var(X_0) < \infty$. $\Var(X_t - X_0) = t \sigma^2$. 
+Standard deviation $ \Sd(X_t - X_0) = \sqrt{t} \sigma$.
+
+(We will show that $|| X || = \sqrt{ \E[X^2]}$ is a norm ).
+\begin{align*} 
+= \sqrt{\E \left[ (X_t - X_0)^2\right]  - \left(\E[X_t] - \E[X_0]\right)^2} \\ 
+= || X_t - X_0 - (\E[X_t] - \E[X_0])^2 ||  
+\\ \leq || X_t - \E [X_t]  || + || X_0 - \E[X_0]|| 
+\\ =  \Sd(X_t) + \Sd(X_0) \in [0, \infty] . \end{align*}
+
+So when $\sqrt{t}\sigma \rightarrow \infty$ the s.d. also goes towards $\infty$. Therefore $(X_t)$ cannot be weakly stationary (for $\sigma \neq 0$). 
+\end{example}
+
+
+
+\begin{exercise}
+Show that there is no stationary solution of 
+\ref{eq:1} 
+ if $\phi = -1$.
+\end{exercise}
+
+\begin{exercise}
+Show that the stationary solution of 
+\ref{eq:1}  for $|\phi| > 1 $ is of the form 
+$X_t = \sum_{k = 1}^\infty (1/\phi)^k Z_{t + k}$.
+\end{exercise}
+
+\begin{example}(ARCH(1))
+Assume $(S_t)$ are prices of financial assets. Log-returns are 
+\[X_t = \log{S_t / S_{t-1}} = \log{1 + \frac{S_t - S_{t-1}}{S_{t-1}}}. \]
+ $ X' = \frac{S_t - S_{t-1}}{S_{t-1}} $ is relative return. 
+$ X' \approx X_t'$. So it measures how much money you made (approximately).
+
+$\Ar(1)$ = auto-regressive model of order one:
+
+Typically people assume that 
+\[ X_t = \sigma Z:t ,  Z_t  \overset{i.i.d.}{\sim} N(0,1). \]
+ \Important{Black-Scholes model}. It is a benchmark model, because it is simple. But it is not correct (realistic).
+
+
+
+Engel (1982):
+Stylized facts contradict i.i.d. assumption. The normal distribution has small tails. Stock prices go up and down -> clustering.
+
+
+\begin{align}
+\begin{cases}
+Z_t \overset{I.I.D}{\sim}  N(0,1) & , ( \text{or more generally} Z_t \sim IID(0,1) ) \\
+X_t = \sigma_t Z_t & , \\
+\sigma_t^2 = \alpha_0 + \alpha_1 X_{t-1}^2 &, \alpha_0, \alpha_1 \text{constant}. 
+\end{cases}
+\label{eq:2}
+\end{align}
+
+$\sigma_t^2$ is sometimes called volatility.
+ 
+
+ARCH = auto-regressive conditionally heteroscedastic (heteroscedastic = variance is changing)
+
+\QuestionStart{Main question:}  \\ Does 
+\ref{eq:2} have a stationary solution? 
+
+For $\alpha_1 \in (0,1)$ one can find a stationary solution with the same trick as before (by iterating backwards).
+
+\[ \sigma_t^2 = \alpha_0 + \alpha_0 \sum_{j = 1}^\infty \alpha_1 Z_{t-1}^2 \cdots \alpha_1Z_{t-j}^2 
+\label{eq:3} \] 
+
+
+
+This series is converging almost surely (a.s.). 
+Series in 
+\ref{eq:3} is only made of non-negative terms. 
+
+If we show that the expectation of this formula is finite, then we know that the formula is converging a.s..
+\[ \E[ \sigma_t^2] = \E\left[\alpha_0 + \alpha_0 \sum_j \alpha_1^j Z_{t-1}^2 \cdots Z_{t-j}^2 \right]  = (*). \]
+Because all terms are non-negative we can exchange $ \E$ and  $\lim$ because of Fubinni (for integrals).
+\[ (*) = \alpha_0 + \alpha_0 \sum_j \alpha_1^j = \alpha_0 \frac{1}{1-\alpha_1} < \infty. \]
+ Therefore $\sigma_t^2 < \infty$ a.s.
+
+The pair $(\sigma_t^2, \sigma_t Z_t = X_t)$ is well defined and solves the  
+\ref{eq:2}.
+
+Observe $\sigma_t \in \sigma\{ Z_{t-1},Z_{t-2}, \dots\}$. So $\sigma_t$ is independent of $Z_t, Z_{t+1} \dots$.
+\[ \E[X_t] = \E\left[ \E\left[ X_t | \sigma\{ Z_{t-1}, \dots\} \right] \right]  = (*). \]
+ We can take $\sigma_t$ out, if it is a constant (and it is, because we know
+ the sigma algebra and therefore all values before $t$. In other words $\sigma_t$ is measurable in the sigma algebra). 
+\[ (*) = \E \left[ \E \left[ Z_t \right] \sigma_t  \right] = \E \left[ \sigma_t \cdot 0 \right] = 0 . \]
+
+We can do the same for 
+\begin{align*} \E\left[ X_t^2 | \sigma\{\dots\} \right]  =  \E \left[  \sigma_t^2 Z_t ^2 | \sigma \{ Z_{t-1}, Z_{t-2} \ldots \} \right] \end{align*}
+\begin{align*} \Var(X_t) = \E[X_t^2] = \E[\E[ \sigma_t^2 Z_t^2 | \sigma\{\dots\} ] ] \\
+ = E(\sigma_t^2) = \frac{\alpha_0}{1 - \alpha_1}. \end{align*}
+
+So variance does not change. Only the conditional variance does.
+
+Similarly one can show that $X_t$ -s are uncorrelated. So $ \Cov(X_{t+ h}, X_t) = 0, h \neq 0$. It follows that $(X_t)'$ are white noise. This does not contradict the reality. Prices are not correlated, but are dependent.( Because the sign is unpredictable.)
+
+
+It was later generalized by Boleslev (1986) into \New{GARCH} (generalized ARCH). it is the most often used model, that models real-life data.
+
+In our example $X_t$ is also strictly stationary (it is weakly, because it is white noise):
+Since $X_t = \Phi(Z_t, Z_{t-1}, Z_{t-2}  \dots) ) ,  Z_t ' $ -s iid. (idea of proof). 
+\end{example}
+
+\section{Properties of $\gamma$ and $\rho$}
+
+\[\gamma_X(h) = \Cov(X_{t+h}, X_t), h \in \Z \]
+\[ \rho_X(h) = \Corr(X_{t+h},X_t) = \frac{ \gamma_X(th) }{ \gamma_X(0) } \]
+
+\begin{lemma}
+\begin{enumerate}
+
+\item $\gamma_X(0) \geq 0$
+\item $|\gamma_X(h)| \leq \gamma_X(0)$ .
+\item $\gamma$ is an even function .
+\item $\gamma$ is a positive semidefinite function i.e. for all $n$ and for all $(a_1, \dots, a_n) \in \R^n$ 
+\[ \sum_{i=1}^\infty \left( \sum_{j=1 }^\infty \left( a_i \gamma(i -j) a_j \right) \right) \geq 0 . \]
+\end{enumerate}
+\end{lemma}
+
+\proof
+\begin{enumerate}
+\item Trivial (property of $ \Cov $ ).
+\item Schwartz-Cauchy inequality (covariance can be seen as inner product).
+\item Trivial ( weak stationarity + symertry of $ \Cov $).
+\item the sum equals $Var(a_1X_1 + \dots + a_n X_n) =$
+\[  \sum_{i,j} \Cov(a_iX_i,a_jX_j) = \sum _{ i,j} a_i a_j \gamma(i-j) . \] 
+\end{enumerate}
+\endproof
+
+\begin{observation}
+The above sum i equivalent to the fact, that the
+matrix 
+\[ \Gamma_n = 
+\left( \begin{array} {c c c c} 
+ \gamma(0) & \gamma(1)  & \ldots & \gamma(n-1) \\
+\gamma(1) & \gamma(0) & \gamma(1) \ldots & \gamma(n-2) \\
+\vdots & \ddots & \ddots & \vdots \\
+\gamma(n-1) & \ldots & \gamma(1) & \gamma(0)
+\end{array} \right)
+\]
+
+is positive semidefinite for all $ n \in \N $ .
+\end{observation}
+
+
+\begin{theorem}
+Function $\gamma: \Z \rightarrow \R$ is auto-covariant function of some weakly stationary time series 
+$ \iff  $ f
+$\gamma$ is even and positive semidefinite.
+\end{theorem}
+
+
+\proof
+($\Rightarrow$) proved in lemma.
+
+($ \Leftarrow$) Because of positive semidefinitness of $\Gamma_n$ for all $n$ it follows that there exists $N(0, \Gamma_n)$. $
+\Gamma_n$ can be a covariance matrix. These distributions as a family of f.d.d-s are consistent. Meaning they satisfy the 
+condition of the theorem 
+\ref{th:1}.
+
+Theorem \ref{th:1} now implies that we can find a (gaussian) sequence that has $\Gamma_n$ as its autocovariance function.
+
+\endproof
+
+\begin{observation}
+Function $\rho$ has the same properties as function $\gamma$. We also know that $\rho(0) = 1$ (always).
+\end{observation}
+
+\begin{observation}
+It is difficult to test for positive semidefinitness. Sometimes it is easier to construct a sequence directly.
+\end{observation}
+
+\begin{exercise}
+Show that the following functions are positive semidefinite.
+\begin{itemize}
+\item \[ \gamma(h) = 2 . \]
+\item \[ \gamma(h) = \begin{cases} 2 & , \text{if } h = 0 \\
+  1 & , \text{if } h = +-1 \\
+ 0 &  ,  \text{otherwise } . \end{cases} \]
+\item \[ \gamma(h) = a \cos{\nu h}, a, \nu > 0 . \]
+\end{itemize}
+\begin{itemize}
+\item  \[ X_t = X \sim N(0,2) , \]
+\item is the autocovariance of MA model (done before)
+\item $\gamma$ is the autocorr. of periodic seq. $X_t = \dots$ (done before)
+\end{itemize}
+
+
+\end{exercise}
+
+\begin{exercise}
+If $\gamma_1$ and $\gamma_2$ are even and positive semidefinite functions the same holds for the function 
+$\gamma = \alpha_1 \gamma_1 + \alpha_2 \gamma_2, \alpha_1, \alpha_2 \geq 0$. 
+
+% Kaj je to? V zvezku tega ni!
+%We sum the two series, multiplied not by $\alpha_1$, but some function of it.
+
+In practice we need to estimate $\gamma_X, \rho_X$ and $\mu = \E[X_t]$. Natural estimators are easy to find:
+\[ \overline{X} _n = \frac{1}{n} \left(X_1 + \dots + X_n \right) \]  the arithmetic mean
+
+For  $X_i $ i.i.d. it converges (law of large numbers). Even a stronger results is the central limit theorem.
+
+We do not have i.i.d. $ X_ i $ -s, because we have dependance. We can do:
+\[ \hat{\gamma(h)} =  \frac{1}{n} \sum_{i = 1}^{n- h}   (X_i - \overline{X}_n)(X_{i+h} - \overline{X}_n) , h \in \{ -(n-1), \ldots -1, 0, 1, \ldots n-1 \} . \]
+Obviously $h < n$ must hold. We say $h =$ {\bf  lag}.
+We divide by $n$ because such a matrix is again positive definite. But it is not unbiased (we would have to divide 
+by the $n - 1 - $ number of missing terms $= h$). In this case we would not have a positive definite matrix. 
+
+For $h < 0$ we set $\gamma(h) = \gamma(-h)$.
+
+$\hat{\rho(h)} = \hat{\gamma(h)} / \hat{\gamma(0)}$.
+
+\end{exercise}
+
+
+
+
+
+\section*{First steps of practical analysis of time series}
+
+% RKoda
+
+
+R libraries:
+
+tseries
+
+TSA
+
+stats
+
+evir
+
+fGarch $->$ not perfectly written ?
+
+mean
+
+sd
+
+read.table
+
+ts.plot $->$ on the same graph (for multivariable)
+
+plot.ts $->$ on more graphs
+
+acf   plots $\hat{\rho}$
+
+acf also works for squares. Our job is to explain this $->$ we are outside the boundaries for siemens data form R.
+
+arima.sim
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+
+\section{Basic transformations of time series}
+
+\vskip1cm
+
+The goal of each transformation is to make time series stationary (or to appear to be stationary).
+Why is stationarity important? If the distribution is changing it is hard to predict anything.
+
+
+\begin{example} (\New{ log/relative returns})
+$ S_t  \ldots $ financial data
+\[ (S_t) \rightarrow (X_t), X_t = \log{S_t/S_{t-1}}  \] 
+\[  \rightarrow (X_t'), X_t' = \frac{S_t - S_{t-1}}{S_{t-1}} \]
+\end{example}
+
+We define the \New{ backwards shift operator} 
+\[ B(X)_t = (BX)_t = X_{t-1}, t \in \Z . \]
+
+Notice that it maps $(X_t)_t$ into $(X_{t-1})_t$.
+
+% on piše grad, govori pa delta...
+We also define the \New{ differencing operator} 
+\[ \nabla(X)_t = \nabla X_t = (I - B) X_t = X_t - X_{t-1} . \]
+ In other words
+\[ \nabla = I - B . \]
+
+Recursively for $j \geq 1$ we define 
+\[ B^j X_t = B (B^{j-1} X_t) , \]
+ and the same for $\nabla$.
+
+Note that $\nabla^0 = B^0 = I$. 
+
+\begin{example}
+Assume $(Y_t)$ is strictly stationary and $a,b \in \R, $
+\[ X_t = a t + b + Y_t, \]
+ then $X_t$ cannot be stationary unless $a = 0$. (homework ... use characteristic functions)
+
+But 
+$\nabla X_t = at + b + Y_t - a(t-1) - b - Y_{t-1} = a + Y_t - Y_{t-1}$ is stationary ($Y_t$ and $Y_{t-1}$ have the same distribution).  
+\end{example}
+
+
+\begin{exercise}
+Assume $(Y_t)$ is weakly stationary in the previous example. Show that $(X_t)$ is weakly stationary as well.
+
+\end{exercise}
+\begin{hint} Use the lemma below.
+\end{hint}
+
+\begin{exercise}
+Show that
+\[ \nabla^2 X_t = X_t - 2X_{t-1} + X_{t-2} \] 
+ for all $t$ and use that to determine a general form of $\nabla^k, k \geq 1$.
+\end{exercise}
+
+
+\begin{exercise}
+Assume $(Y_t)$ is weakly (strongly) stationary. Assume 
+\[ n_j = \sum_{j=0}^k a_j t^j , \]
+ and 
+\[ X_t = n_t + Y_t . \]
+
+Show that 
+\[ \nabla^k X_t = k! a_k + \nabla^k Y_t , \]
+ which is again weakly (strongly) stationary.  
+\end{exercise}
+
+\begin{observation}
+Differencing can remove any polynomial trend. 
+\end{observation}
+
+
+Assume that time series $(Y_t)$ satisfies 
+\[ Y_t = \sum_{k = -\infty}^\infty h_k X_{t-k}, t \in \Z , \]
+ (assume it converges) for some sequence $h_k$ and some time series $(Y_t)$. Than we say that $(Y_t)$ is a product of action of \New{ liner filter} on the sequence $(X_t)$.  
+
+Formally we denote  the \New{filter } by 
+\[\psi(B) =  \sum_{k = -\infty}^\infty h_k B^k . \]
+
+\begin{example}
+$\nabla = B^0 - B^1$, so $h_0 = 1, h_1 = -1$ and $0$ otherwise.
+
+\end{example}
+
+If $(h_k)$ is absolutely summable and $(X_t)$ is a time series, which satisfies $X_t = \sum h_k Z_{t-k}$ for $Z_t$ white noise we say $(X_t)$ is a \New{ liner process} , notation:
+\[ X_t = \psi(B) Z_t . \]
+
+So linear process is an absolutely summable linear filter acting on white noise. 
+
+
+
+\begin{example}(MA(1))
+\[ X_t = Z_t + \theta  Z_{t-1} ,  \quad Z_t \sim WN(0, \sigma ^2) . \]
+\end{example}
+
+
+The condition of absolute summability ensures $X_t$ is well defined (the sum converges).
+
+\begin{lemma}  \Important{( Key lemma on linear transformations) }
+Assume $(Z_t)_t$ is a time series and the sequence $(h_k)_k$ satisfies the absolute summability condition. Then 
+\begin{enumerate}
+\item $ \sup_t{\E[|Z-t|] } < \infty \Rightarrow  \sum_k h_k Z_{t-k}$ converges absolutely a.s. and in $L_1$. 
+\item $ \sup_t{\E [Z_t^2]} < \infty \Rightarrow \sum_k h_k Z_{t-k}$ converges in $L_2$ as well.
+\item $Z_t$ weakly stationary $\Rightarrow$ the series $X_t = \sum_k h_k Z_{t-k}$ is weakly stationary as well. Moreover \\\[ \gamma_X(k) = \sum_{i,j} h_i h_{j + i - k} \gamma_Z(i) . \]
+\label{lem:key}
+\end{enumerate}
+
+\end{lemma}
+
+
+Reminder:
+$Y_n \rightarrow (L_p) Y$ means $E|Y_n - Y|^p \rightarrow 0$. 
+
+
+\begin{exercise}
+Assume $(X_t)$ satisfies $X_t \geq 0$ for all $t$. Then $E\sum_t X_t = \sum_t E X_t$ (can be $+ \infty$).
+
+\end{exercise}
+\begin{hint} Lebesgue theorem on monotone convergence)
+ \[ \sum_{|t| \leq m} \rightarrow \sum_t X_t . \]
+\end{hint}
+
+
+\begin{exercise}
+Assume $\sum_t E|X_t| < \infty$. Then $\sum_t X_t$ converges a.s. and in $L_1$. Moreover $E\sum_t X_t = \sum_t E X_t$.
+\end{exercise}
+\begin{hint}
+Again lebesgue, but on dominant convergence)
+\end{hint}
+
+\proof (of lemma)
+\begin{enumerate}
+\item Observe 
+\[ \sum_k \E[|h_k Z_{t-k}|] \leq \sup_t \E[|Z_t|] \sum_k |h_k|. \]
+ Now the previous exercise proves the series converges (everything $< \infty$). 
+
+\item 
+\[ \sup_t \E[ Z_t^2 ] < \infty \Rightarrow \sup \E [ | Z_t | ] < \infty \]
+This is consequence of the Cauchy Schwarz  also $ |z| \leq 1 + z^2. $ 
+Now the series is converging, according to (1). 
+
+Consider the 
+
+\begin{align*} 
+\E\left[\left(\sum_j h_j Z_{t-j} - \sum_{|j|\leq k} h_j Z_{t-j}\right)^2 \right] = \\
+\E \left[ \left( \sum_{|j| > k} h_j Z_{t-j} \right)^2 \right]  \leq  \\ 
+\E\left[ \left(\sum_{|j| > k} |h_j| |Z_{t-j}| \right)^2  \right] = \\
+ \sum_{ |i|,|j| > k} |h_i||h_j|  |\E[ |Z_{t-i}||Z_{t-j}  ] |\leq \\
+\sqrt{ \E [ | Z_{t-i} |]^2 \E [ | Z_{t-j} | ]^2 }   \leq \\ 
+\sup _t \E [ Z_t]^2 \leq 
+\sup _t \E [Z_t] ^2 \sum _{|i|, |j|>k} |h_i | |h_| = \\
+ \sup _t \E [ Z_t ] ^2 \left( \sum _{|i|>k} |h_i|^2 \right)  \rightarrow 0
+\end{align*}
+\item
+By (1) $ X_t $ is well defined and converges a.s. in $L_1 $. If we use exercise 15, we get:
+
+\begin{align*}
+\E \left[ \sum _{j \in \Z} h_j Z_{t-j} \right] = \sum _{j \in \Z} \E[ Z_{t-j} ] \end{align*}
+And since $ Z_t $ is weakly stationary 
+\[  \E [ Z_t] = \mu _Z . . \]
+Without loss of generality we assume $ \mu _Z = 0 $ . 
+\begin{align*} \Cov(X_{t+h} , X_t) = \E [ X_{t+h}, X_t ] = \\
+\E\left[ \sum_i \sum _j h_i Z_{t+h-i} h_j Z_{t-j} \right] = (*) 
+\end{align*}
+We define $ l = h-i+j $ , again use Cauchy Schwarz inequality 
+
+\begin{align*}
+(*) =  \sum_i \sum_l  h_i h_{i+l-h} \gamma _Z(l) = \\
+\gamma _X(h) . \end{align*}
+Since the last equality does not depend on $ t $ the time series $ (X_t) $ is weakly stationary.
+
+\end{enumerate}
+\endproof
+
+
+\begin{exercise}
+Say $Z_t \sim WN(0, \sigma^2 )$. For convergence of series $\sum_k h_k Z_{t-k}$ it is sufficient that $\sum h_j^2 < \infty$.
+\end{exercise}
+\begin{hint}
+ Use Hilbert space theory to prove it)
+\end{hint}
+
+Linear filter $\psi(B) = \sum_k h_k B^k$ is \New{ causal} if $h_k = 0$ for $k < 0$. 
+
+A linear process 
+\[ X_t = \sum:k h_k Z_{t-k}\]  is \New{ causal} (with respect to white noise $(Z_k)$) if $h_k = 0$ for $k < 0$. 
+
+\begin{example}
+For $|\phi| < 1 , (Z_t) \sim WN(0,1)$ the series 
+\[ X_t = \sum_{j=0}^\infty \phi^j Z_{t-j} , \]
+ is well defined and solves the $\Ar(1)$ equation. Moreover $(X_t)$ is causal. 
+\end{example}
+
+Assume 
+\[ \psi(B) = \sum_j \psi_j B^j, \phi(B) = \sum_j \phi_j B^j , \]
+ and $\phi_j, \psi_j$ are absolutely summable. For the time series $(Z_t)$ such that $\E[|Z_t|] < \infty$ define $X_t = \psi(B) \phi(B) Z_t$.
+
+Use the lemma 
+\ref{lem:key}
+to see everything is well defined. 
+
+\[X_t = \sum_k \psi_k \sum_j \phi_j Z_{z-k-j} = \sum_{k,j} \psi_k \phi_j Z_{t-k-j}  = (*) . \]
+
+Set $k+j i$, hence $ j = l-k$.
+
+\[ (*) = \sum_l Z_{t+l} \sum_k \psi_k \phi_{l-k} = (*) \]
+
+We define $ \theta_l = \sum_k \psi_k \phi_{l-k}$ and get
+
+\[ (*) = \Psi(B) \circ  \Phi(B) = \sum_l \theta_l B^l . \]
+
+It follows that 
+\[\Psi(B) \circ \Phi(B) = \Phi(B)  \circ \Psi(B) . \]
+
+
+\newpage
+
+\section{On practical time series analysis}
+\vskip1cm
+
+
+If we cannot assume stationarity we will assume that we study time series of the following form:
+
+\[X_t = m_t + S_t + Y_t , \]
+ where
+\ the \New{ trend} $m_t$ is a deterministic (hence the small letter) sequence, which "does not vary too much",
+
+the \New{ seasonality} $s_t$ a deterministic sequence of known period $d$, such that 
+\[ s_t = s_{t+d} ,  \text{ for all } t , \]
+
+and the $Y_t$ a (weakly/strongly) stationary time series.
+
+
+\begin{observation}
+In practice it is hard to distinguish the three components. 
+
+\Important{Global warming} : trend or seasonality? Here it is proven, but it can be hard to determine.
+\end{observation}
+
+But how do you do it, if you have to?
+
+Practical time series analysis (t.s.a.) can be split into several steps:
+\begin{enumerate}
+\item plot the observations $x_t$. We want to detect possible trend and seasonality. 
+\item try to remove the trend and seasonality
+\item residuals $y_t = x_t - \hat{m}_t - \hat{s}_t$ or $y_t = \log{x_t / x_{t-1}}$ are then modeled  by a stationary model
+\begin{enumerate}
+\item choose a model ($\Ar, \Ma, \Arch , \dots \Arma$)
+\item estimate parameters
+\item check goodness of fit
+\end{enumerate}
+\end{enumerate}
+After that we can try to predict or simulate future behavior of the time series.
+
+Use Ockham's razor.
+
+Box (person): All models are wrong. Some are useful.
+
+Einstein: Make the model as simple as possible, but not simpler than that.
+
+\section{ Decomposing time series}
+
+\vskip1cm
+
+
+Assume 
+\[ X_t = m_t + s_t + Y_t, \]
+ $Y_t$ a weakly stationary sequence, $s_t = s_{t+d}$ and $\sum_{t=1}^d s_t = 0$ (otherwise we can subtract the mean in $m_t$) and $ \E [Y_t] = 0$ (similar as before). 
+
+Assume (for start) there is no seasonality. 
+\begin{enumerate}
+\item We can remove the trend by differencing. We have seen that if $m_t = \sum_{j=0}^ka_j t^j$ is polynomial and we apply $\nabla^k$ we get
+$X_t = k! a_k \nabla^k Y_t$. Because $Y_t$ is stationary $X_t$ is stationary by lemma
+\ref{lem:key} .
+.
+\item Direct estimation of the trend. 
+\begin{enumerate}
+\item smoothing. Take $q < n \in \N$ ("not too small"). We can set $\hat{m}_t = 1 / (2q + 1)\sum_{j = -q}^q X_{t+j}$, which is a linear filter. 
+
+\[ \hat{m}_t = \frac{1}{2q + 1}\sum_{j = -q}^q m_{t+j}+ 1 / (2q + 1)\sum_{j = -q}^q Y_{t+j}. \]
+
+\[ \frac{1 }{ 2q + 1}\sum_{j = -q}^q Y_{t+j} = (\approx) 0 \]  by law of large numbers??
+
+If $m_t$ does not vary too much it is piecewise linear and we can model it this way and it will be approximately true.
+
+But this approach does not work on the edge of the time series. 
+
+\item exponential smoothing. Take $\alpha \in (0,1)$. $\hat{m}_1 = X_1$. 
+\begin{align*}  \hat{m}_t = \alpha X_t + (1 - \alpha) m_{t-1} = \\
+\sum_{j = 0}^{k-2} \alpha(1-\alpha) X_{t-j} + (1-\alpha)^{t-1} X_j.
+\end{align*}
+
+
+\item fitting a function to $m_t$, e.g. polynomial
+
+\begin{align*}  \hat{m}_t  = & \sum_{j = 0}^k \hat{a}_jt^j   \\
+ \min _{ \hat{a}_j } \sum _{j=0} ^k \hat{a} _j t^j \end{align*}
+and we choose $\hat{a}_k $ by OLS (ordinary least squares).
+
+\end{enumerate}
+ \item Remove seasonality and the trend by differencing. Define operator 
+\[ \nabla_d = X_t = X_t - X_{t -d} = (I - B^d)X_t. \]
+If $s_t = s_{t+d}$ then 
+\[ \nabla_d X_t = m_t - m_{t-d} + s_t - s_{t-d} + Y_t - Y_{t-d}, \]
+ but the $ s_t - s_{t-d} = 0$, so we come back to the previous examples, it works only for $ t \in \{q +1, \ldots n-1 \} $.
+
+\item Direct estimation of trend and seasonality (can be done in many ways, we show one).
+\begin{enumerate}
+\item Set 
+\[ q = \begin{cases} \frac{d}{2} & \text{, if } d \text{ even,}  \\ \frac{d-1}{ 2} \text{, if } d  \text{ is odd. } \end{cases} \]
+ The initial estimate of the trend is chosen by smoothing:
+
+\[ d = 2q, \]
+\[ \hat{w}_t = \frac{1}{2d}X_{t-q} + \frac{1}{d} X_{t-q+1} + \frac{1}{d}X_{t+q-1} + \frac{1}{2d}X_{t+q}. \]
+
+Here we are trying to estimate the trend. Say we have monthly data and $q = 12$. We estimate by averaging over one year. But the edge months would be counted twice (previous year, next year), so we only take half of that. 
+
+\item Transform data by removing the initial estimation of the trend: 
+\[ X_t \rightarrow X_t - \hat{w}_t. \]
+Now we also estimate the seasonality. Initially we set 
+\[ \hat{u}_k = \frac{1}{ \lfloor\frac{n-k}{d}\rfloor + 1 } \sum_{j=0}^{\lfloor\frac{n-k}{d}\rfloor} (x_{j+k} - \hat{w}_{j+d+k}), k=1,\dots, d \]
+
+\[ \hat{s}_k = \hat{u}_k - 1/d \sum_{j=1}^d \hat{u}_j, k=1, \dots, d, \hat{s}_t = \hat{s}_{t-d} . \]
+
+\item we transform 
+\[ X_t \rightarrow X_t - \hat{s}_t = d_t. \]
+ For $d_t$ we estimate trend by one of the methods above. 
+
+\end{enumerate}  
+\end{enumerate}
+
+
+R has many (special) procedures to compute these estimates (use as a black box). 
+
+
+\vskip0.5cm
+
+Again R on screen:
+
+hist
+
+qqnorm (qqplot package)
+
+filter
+
+HoltWinters
+
+lagged plot (plot $(X_t, X_{t+d})$). If no pattern, there is no dependance
+
+decompose
+
+stl
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\chapter{Hilbert spaces, Conditional expectation, and Prediction}
+
+\vskip1cm
+
+Problem: I have given observations $X_1, \dots, X_n$. The goal is to predict $X_{n+1}$. 
+
+The traditional way would be to minimize RMSE 
+\[ \min_g \E[ (X_{n+1} - g(X_1, \dots, X_n))^2 ] . \]
+
+A simpler problem would be to find $ \E[(X_{n+1} - (\alpha_1 X_n + \dots + \alpha_n X_1))^2 ] $. ($X_n$ most important, hence $\alpha_1$)
+
+\begin{definition}
+\New{ Hilbert space} is a complete inner product space.
+\end{definition}
+
+\begin{theorem} \New{ (Projection theorem) }
+If $M$ is a closed subspace of a Hilbert space $H$ and $x \in H$, then
+\begin{enumerate}
+\item there is an unique $\hat{x} \in M$, such that
+\[ || x - \hat{x}|| = \inf_{y \in M}|| x - y || . \]
+\item $\hat{x} \in M $ 
+\[ || x - \hat{x}|| = \inf_{y \in M}|| x - y || \] is equivalentHilbert to $x' \in M$, 
+\[ x - \hat{x} \perp M , \] i.e.
+\[ (x - \hat{x}) \in M^{\perp} \]
+\end{enumerate}
+\end{theorem}
+\proof
+No proof. Simple.
+\endproof
+
+
+The mapping $x \rightarrow \hat{x}$ is denoted by $\Pi_M$. Clearly it is a linear operator, $|| \Pi_M X|| \leq ||x||$ for all $x \in H$ and $\Pi_M^2 = \Pi_M$. 
+
+For $M_1 < M_2$ (closed subspace) we know 
+\[\Pi_{M_1}\Pi_{M_2}x = \Pi_{M_1}x. \]
+
+If $M_1 \perp M_2$ closed subspaces of $H$ then 
+ \[ \Pi_{M_1 + M_2} x = \Pi_{M_1}x + \Pi_{M_2}x. \]
+
+We will only be interested in the Hilbert space $L_2(\Omega, F, P)$. We say $X \in L_2(\Omega, F, P)$ if $\E[X^2] < \infty$.
+
+Although actually $[X] \in L_2(\Omega, F, P)$, we say 
+ (equivalent classes are contained in $L_2$). 
+\[ X \sim Y \iff P(x \neq Y) = 0. \]
+\begin{observation}
+One can consider complex valued random variables as well. The inner product $X, Y \in L_2(\Omega, F, P)$
+\[  \langle X,Y \rangle = E(X \overline{Y}). \]
+\end{observation}
+
+Thus for real valued $X,Y$ conjugation is not needed. 
+\[ ||  X || = ||\sqrt{\langle X,X \rangle}|| = \sqrt{EX^2} \]
+Convergence in $L_2$ is equivalent to convergence in this norm.
+
+Cauchy-Schwartz:
+\[ |\langle X,Y\rangle |^2 \leq ||X||^2 ||Y||^2 \label{eq3:1} \]
+i.e.
+\[ |\E[ | X Y| ] \leq \sqrt{\E[X^2]  \E[Y^2]}. \]
+
+\begin{example}
+If $X_n \overset{L_2}{\rightarrow} X, Y_n \overset{L_2}{\rightarrow} Y$ then
+\[  \langle X_n, Y_n\rangle \overset{n \to \infty}{ \rightarrow} \langle X,Y \rangle  . \]
+\end{example}
+\proof
+We observe the difference 
+\begin{align*} |\langle X_n, Y_n\rangle  - \langle X,Y\rangle | \leq |\langle X_n, Y_n - Y \rangle | + |\langle X_n - X, Y \rangle | \\ 
+\leq ||X_n|| ||Y_n - Y|| + ||X_n - X|| ||Y||.
+\end{align*} 
+
+We notice 
+\[ ||X_n - X||||Y||\rightarrow 0, \]  because the norm is finite. Similar for the other term (we know the $ \sup_n X_n$ is bounded, so we can use the same argument). 
+\endproof
+
+
+\begin{exercise}
+Use 
+\ref{eq3:1}
+ to show $X_n \overset{L_2}{\rightarrow} X \Rightarrow X_n \overset{L_1}{\rightarrow} X$
+\end{exercise}
+
+
+\begin{exercise}
+Show $X, Y \in L_2$ then
+\[ \Sd(X + Y) \leq \Sd(X) + \Sd(Y) . \]
+\end{exercise}
+
+\section{Conditional expectation}
+
+$ \Fc_0 \leq \Fc$ sub $\sigma-$algebra then
+$L_2(\Omega, \Fc_0, P) \leq L_2(\Omega, \Fc, P)$ as a closed subspace.
+
+
+\begin{definition}
+The projection of $X \in L_2(\Omega, \Fc, P)$ on  $L_2(\Omega, \Fc_0, P)$ is called \New{ conditional expectation} of $X$ with respect to $\Fc_0$, notation $\E[X | \Fc_0]$.
+\end{definition}
+
+\begin{definition} (alternative)
+The conditional expectation of nonnegative or integrable $X$ with respect to $\Fc_0$ is a $\Fc_0-$measurable random variable denoted by $\E[X | \Fc_0]$ such that 
+\[ \int_A \E[X | \Fc_0] dP = \int_A X dP, \;\; \forall A \in \Fc_0. \]
+\end{definition}
+
+\begin{observation}
+The difference is the second definition is more general, as it asks for less conditions. There is also a subtle difference:
+According to definition one
+$\E[X | \Fc_0] \in  L_2(\Omega, \Fc, P)$ and according to definition two 
+$\E(X | \Fc_0)$ is one of many equivalent random variables. 
+
+This integral exists because of the Radon-Nykodimov theorem. For $X \in L_2$ two definitions are (essentially) equivalent.
+\end{observation}
+
+\begin{example}
+Assume $X \in  L_2(\Omega, \Fc, P)$ and $Y = E(X |\Fc_0)$ with respect to definition one. Then $Y$ also satisfies the second definition.
+
+Really all we need to show  is $Y$ satisfies the integral, which is equivalent to the 
+\[ \int_A(X-Y)\mathbbm{1}_A dP = 0, \]
+or equivalently
+\[ \E[X - Y] \mathbbm{1}_A =  \langle X-Y, \mathbbm{1}_A \rangle = 0  .\]
+\end{example}
+
+\begin{definition}
+For nonnegative or integrable $X$ we know
+\[ \E[X | Y ] = \E[X | \sigma(Y)] . \]
+$Y$ is an arbitrary random vector on the same probability space. 
+\end{definition}
+
+
+\begin{example}
+\begin{enumerate}
+\item $\Fc_0 = \{\emptyset, \Omega\}$. Clearly $\E[X | \Fc_0] = \E[X]$,
+\item If $X \in \Fc_0$ measurable, then $\E[X | \Fc_0] = X$.
+\end{enumerate}
+\end{example}
+
+\begin{theorem} \Important{(properties of conditional expectation)}
+For $X,Y$ integrable random variables on $(\Omega, \Fc, P)$ and $\Gc \subset \Fc  , \;\sigma-$algebra. The following holds:
+\begin{enumerate}
+\item \[ \E[\alpha X + \beta Y | \Gc] = \alpha \E[X | \Gc] + \beta \E[Y | \Gc] . \]
+\item if $Z$ is $ \Gc $ measurable, $Z, X \in L_2$ then 
+\[ \E[Z X|\Gc] \overset{a.s.}{ = } Z \E[X|\Gc]  . \]
+\item \[ X \geq 0  \Rightarrow  \E[X | \Gc] \overset{a.s}{ \geq } 0 \]
+\item  $ \Gc_0 \subset \Gc \subset \Fc \sigma-$algebra
+\[ \E \left[ \E[X|\Gc] |\Gc_0\right] \overset{a.s.}{=} \E[X|\Gc_0] . \]
+In particular for $\Gc_0 = \{\emptyset, \Omega\}$ we see
+\[ \E\left[\E[X|\Gc]\right] = \E[X] . \]
+\item if $X$ is independent of $G$ then
+\[ \E[X | \Gc ] = \E[X] . \]
+\end{enumerate}
+\end{theorem}
+
+\begin{lemma} \Important{(Dudley)}
+For random variables $(Y_\alpha: \alpha \in A)$. If $X \in \sigma(Y_\alpha: \alpha \in A)$ then
+\begin{enumerate}
+\item $|A| = k < \infty \Rightarrow$ there exists a measurable $g: \R^k \rightarrow \R$ and 
+\[X = g(Y_{\alpha_1}, \dots, Y_{\alpha_k}) . \]
+\item $|A| = +\infty \Rightarrow$ there exists a countable set of indices $\{\alpha_i\}_{i \in \N} \in A$ and measurable
+$g: R^\N \rightarrow \R$ such that 
+\[ X = G(Y_{\alpha_1}, \dots) . \]
+\end{enumerate}
+\end{lemma}
+
+Since $\E[X|Y] \in \sigma(Y) \Rightarrow \E[X|Y] = g(Y)$ for some $g$. It makes sense to write $\E[X | Y = y]$. 
+
+\section{Linear Predictors}
+
+Assume: $(X_t)$ is weakly stationary with mean $0$. 
+
+\begin{definition}
+\New{ The best  linear predictor} for $X_{n+1}$ in terms of $X_1, \dots, X_n$ is the linear combination 
+\[ Z = \varphi_1 X_n + \dots + \varphi_1 X_1 \]
+such that 
+\[ \E\left[ (Z - X_{n+1})^2\right] = \inf_{y \in 
+\Span(X_1, \dots, X_n)} \E\left[(X_{n+1} -Y)^2 \right]  . \]
+\end{definition}
+
+Notice that $ \Span(\dots)$ is a closed subset of $L_2(\Omega, F, P)$. The projection theorem implies such a $Z$ exists and is unique! 
+
+We denote $M_n = span(X_1, \dots, X_n)$ and $\Pi_n = \Pi_{M_n}$ i.e. $\Pi_nX_{n+1} = \varphi_1 X_n + \dots + \varphi_n X_1 = Z$. 
+
+\begin{observation}
+One should write $\varphi_{n 1}, \dots, \varphi_{n n}$.
+\end{observation}
+
+The projection theorem implies 
+\begin{align*} Z \in M_n, X_{n+1} - Z \perp M_n \iff \\
+ Z \in M_n, <X_{i+1} - Z, X_i> = 0, i = 1, \dots, n \end{align*}
+ and that is equal to
+\begin{align*}
+Z \in M_n, \langle X_{n+1}, X_i \rangle = \langle Z, X_i \rangle,  i = 1, \dots, n \\
+ = \langle \varphi_1 X_n+ \dots, X_i \rangle = \varphi_1 \langle X_n, X_i \rangle + \dots 
+\end{align*}
+
+but $\langle X_j, X_i\rangle = \E[ X_j X_i] = \Cov(X_j, X_i) = \gamma_X(j-i)$, which is equivalent to
+\[ Z \in M_n, \gamma_X(n + 1 -i) = \varphi_1 \gamma(n - i) + \dots, i = 1, \dots, n , \]
+ which is just a linear system of equations:
+
+\[  Gamma_n  
+\left( \begin{array}{c} \varphi _1 \\ \varphi _2 \\ \vdots \\ \varphi _n \end{array} \right)
+ = 
+\left( \begin{array} {c c c c} 
+ \gamma(0) & \gamma(1)  & \ldots & \gamma(n-1) \\
+\gamma(1) & \gamma(0) & \gamma(1) \ldots & \gamma(n-2) \\
+\vdots & \ddots & \ddots & \vdots \\
+\gamma(n-1) & \ldots & \gamma(1) & \gamma(0)
+\end{array} \right)
+\]
+
+
+
+This system has a solution by projection theorem. But not necessarily unique unless $\Gamma_n$ is regular, which is equivalent to begin positive definite. 
+
+The \New{ prediction error} equals 
+\[  \E \left[ \left( X_{n+1} - Z \right) ^2 \right]    = \E \left[ (X_{n+1 } - \Pi_n X_{n+1})^2   \right] .  \]
+
+Observe:
+\begin{align*} ||X_{n+1}||^2  = & \\ 
+= & \langle X_{n+1} - \Pi_n X_{n+1} + \Pi_n X_{n+1}, X_{n+1} - \Pi_n X_{n+1} + \Pi_n X_{n+1} \rangle \overset{orthogonality}{=}  \\
+= & ||X_{n+1} - \Pi_n X_{n+1}||^2 + ||\Pi_n X_{n+1}||^2 
+\end{align*}
+
+ (basically Pythagorean theorem for $L_2 $.
+
+The error is therefore:
+\begin{align*}
+ \E\left[(X_{n+1} - \Pi_n X_{n+1})^2\right]  \\ 
+= \E\left[ (X_{n+1})^2\right] - E\left[\Pi_n X_{n+1}\right] ^2  \\ 
+= \gamma_X (0) - \langle \varphi_1 X_n + \ldots \varphi _n X_1, \varphi _1 X_n + \ldots \varphi _n X_1 \rangle \\
+= \gamma_X(0) - \sum_{i=1} ^n \sum_{j=1} ^n  \varphi_i \varphi_j \gamma(i-j)    \\
+ = \gamma_X(0) - \left<  \left( \begin{array}{c} \varphi _1 \\ \vdots \\ \varphi _n \end{array}  \right) ,  \Gamma_n   \left( \begin{array}{c} \varphi _1 \\ \vdots \\ \varphi _n \end{array} \right) \right>  \\
+ = \gamma_X(0) - \left<  \left( \begin{array}{c} \varphi _1 \\ \vdots \\ \varphi _n \end{array}  \right) ,     \left( \begin{array}{c} \gamma (1) \\ \vdots \\ \gamma(n) \end{array} \right) \right>  
+\end{align*}
+
+\begin{exercise}
+Show that the prediction error for $X_{n+h}, h \geq 2$ equals 
+\[ \E \left[ (X_{n+h}- \Pi_nX_{n+1})^2 \right]  = \gamma(0) - \left< \left( \begin{array} {c} \alpha _1 \\ \vdots \\ \alpha _n \end{array} \right) , \left( \begin{array} {c} \gamma(h) \\  \vdots \\ \gamma(n+h) \end{array} \right) \right> ,\]
+where 
+\[ \Pi_n X_{n+h} = \alpha_1 X_n + \dots + \alpha_n X_1, \]
+which satisfy 
+\[ \Gamma_n \left( \begin{array} {c} \alpha_1 \\ \vdots \\ \alpha _n \end{array} \right) 
+ = \left( \begin{array} {c} \gamma(h) \\ \vdots \\ \gamma(n+h-1) \end{array} \right)  \]
+\end{exercise}
+
+\begin{example} ($\Ar(1)$ process)
+For $(Z_t) \sim WN(0, \sigma^2)$ suppose a stationary sequence $(X_t)$ satisfies
+\[ X_t = \varphi X_{t-1}, t\in \Z, |\varphi| < 1, \]  then
+\[ X_t = \sum_{i = 0}^\infty \varphi^i Z_t , \]  and
+$Z_{n+1} \perp X_j, j=1,\dots,n$ (because $Z_{n+1} \perp Z_j, j\leq n$ and the scalar product is continuous).
+
+\[ \Pi_n X_{n+1} = \Pi_n(\varphi X_n) + \Pi_n(Z_{n+1}) = \varphi X_n + 0 \]
+ ($Z_{n+1}$ is orthogonal to previous guys, so projection is $0$). This is not true if $|\varphi| > 1$.
+
+\end{example}
+
+\begin{exercise}
+Show in the ($\Ar(1)$) example that 
+\[ \Pi_n X_{n+h} = \varphi^h x_n, h \geq 1. \]
+ The prediction error in $\Ar(1)$ example:
+\[ \E \left[ (X_{n+1} - \varphi X_n)^2 \right] = \E \left[ (Z_{n+1})^2 \right] = \sigma ^2 . \]
+\end{exercise}
+
+\begin{example} (periodic process)
+\[ X_t = A_1 \cos{\nu t} + A_2 \sin{\nu t}, \] 
+ $  \Var( A_1) = \Var (A_2) , \E[A_1] =  \E[A_2] = 0, \Cov(A_1, A_2) = 0$.
+Then 
+\[ \Pi_n X_{n+1} = 2 \cos{v} X_n - X_{n-1} . \]
+ Moreover 
+$ \gamma(h)  = \sigma^2 \cos{vh}$.  
+
+\begin{align*}
+ \E\left[(X_{n+h} - Pi_nX_{n+1})^2\right] = \sigma^2 - \left<\left( \begin{array}{c} 2 \cos{\nu} \\ -1 \\ 0 \\ \vdots \\ 0 \end{array} \right), \left( \begin{array} {c} \sigma^2\cos{\nu} \\ \sigma^2 \cos{2\nu} \vdots \\ \sigma^2 \cos{n v} \end{array} \right) \right> = \\
+= \sigma^2 - (2 \sigma^2 \cos^2{v} - \sigma^2 \cos{2v}) = 0 . \end{align*}
+
+Here $\varphi$ -s are not unique! 
+\end{example}
+
+The problem is that in practice we do not know $\gamma$ -s, which we used in the examples.
+
+\section{Case of non-zero expectations}
+
+Assume $(X_t)$ weakly stationary, $ \E[ X_t] = \mu$.
+\[ M_n' = \Span(1, X_1, \dots, X_n) \]
+
+\Important{The best linear predictor} of $X_{n+1}$ in terms of $1, X_1, \dots, X_n$ is the projection of $X_{n+1}$ on $M_n'$.
+
+If $\mu = 0 = \E[ X_t] $ then 
+\[ \Pi_{M_n'}X_{n+h} = \Pi_n X_{n+h} \]
+
+Assume $Y_1, \dots, Y_n \in L_2$ and $\E[Y_1] = \dots = \E[Y_n] = 0$. It follows that $Y \perp 1, i = 1, \dots, n$.  Then the 
+\[ \Span(1, Y_1, \dots, Y_n) = \Span(1) +_{\perp}  \Span(Y_1, \dots, Y_n). \]
+
+If $ \E[ X_t] = \mu$, we can work with  $ X_t - \mu$. 
+\[ \Pi_{M_n'}(\mu + X_{n+1} - \mu) = \mu + \Pi_{\Span(X_1 - \mu, \dots , X_n - \mu)}(X_{n+1}- \mu) . \]
+($M_n' = \Span(1) +_{\perp} \Span(X_1 - \mu, \dots)$)
+
+Now we have a weakly stationary series of mean $0$, so we know how to do it, if we estimate $\mu$. 
+
+\begin{observation}
+If we have a stationary sequence with mean $\neq 0$ we can:
+\begin{enumerate}
+\item subtract the mean to get $Y_t = X_t - \mu$
+\item predict $Y_{n+h}$ in terms of $Y_i$
+\item add $\mu$ back to get the prediction for $X_{n+h}$
+\end{enumerate}
+\end{observation}
+
+\section{ Non-linear prediction}
+
+\begin{definition}
+\New{ The best predictor} for $X_{n+1}$ in terms of $X_1, \dots, X_n$ is a random variable $ f_n(X_1, \ldots , X_n)$, which minimizes 
+\[ \E[(X_{n+1}- f_n(X_i))^2] , \]
+ in the class of all measurable functions $f_n: \R^n \rightarrow \R$. 
+\end{definition}
+
+In $L_2(\Omega, \Fc, P)$ space by definition one of conditional expectation the best predictor is
+\[ \E[X_{n+1} | X_1, \dots, X_n] , \]
+ or 
+\[ \E[W | X_1, \dots, X_n] , \]
+ if we want to predict $W$. 
+
+\begin{example} (\New{ARCH(1)})
+
+Suppose $0< \alpha_1 < 1$. The ARCH(1) equation has a causal stationary solution in the sense:
+there exists a stationary process 
+\[ X_t = \sigma_t Z_t, Z_t \sim IID(0,1) , \]
+ and $\sigma_t^2 = \alpha_0 + \alpha_1 X_{t-1}^2$. 
+
+Then 
+\[ \E[X_{n+1} | X_1, \dots, X_n] = 0. \] 
+ Even $ \E[X_{n+1} | X_j, j =-\infty, \dots, n] = 0$.
+
+\begin{align*}
+\E[X_{n+1} | X_1, \dots, X_n ] = \E \left[ \E[X_{n+1}|\sigma_j, X_j, j = -\infty, \dots, n] |X_1, \dots, X_n \right] = \\
+=  \E\left[\E[\sigma_{n+1} Z_{n+1}|\sigma_j, X_j, j = -\infty, \dots, n] |X_1, \dots, X_n \right] = \\
+=  \E\left[ \sigma_{n+1} \E[Z_{n+1}|\sigma_j, X_j, j = -\infty, \dots, n]|X_1, \dots, X_n \right] . 
+\end{align*}
+ (because $Z_{j+1}$ is independent of the others the best we can predict is the average, which is $0$).
+
+\[ = \E[\sigma_{n+1} 0] = 0. \]
+\end{example}
+
+\begin{example} ($\Ar(1)$)
+Suppose $|\varphi| < 1, Z_t \sim IID(0,1)$ 
+\[  X_t = \varphi X_{t-1} + Z_t, t\in \Z , \]
+ and $X_t = \sum_{j = 0}^\infty \varphi^j Z_{t-j}$.
+
+\[ \E[X_{n+1}|X_1, \ldots , X_n] = \E[ \varphi X_n + E(Z_{n+1} | X_1, \ldots, X_n] = \varphi X_n. \]
+
+It follows that the best predictor is the best linear predictor.
+\end{example}
+
+\section{ Partial autocorrelation function}
+
+Assume $(X_t)$ is weakly stationary, mean $0$.
+\[ \Pi_{(2, \dots, n)} = \Pi_{\Span(X_2, \dots, X_n)} . \]
+
+Define 
+\begin{align*} \alpha(1) = & \Corr(X_2, X_1) = \rho(1), \\
+ \alpha(h) = & \Corr(X_{h+1} - \Pi_{2, \dots, h} X_{n+h}, X_1 - \Pi_{(2, \dots, h)}X_{n+1}) \end{align*}
+
+(we subtract other variables to see if the variables are really causal and not just correlated).
+
+Function $\alpha_X = \alpha: \N \rightarrow [-1,1]$ given above is called the \New{ partial autocorrelation function} of the sequence $(X_t)$. We call it \New{ pacf}.
+
+If $\E[X_t ] = \mu$ we define 
+\[ \Pacf(X_t) = \Pacf(X_t - \mu). \]
+
+\begin{example} ($\Ar(1)$)
+Assume that $(X_t)$ is a stationary process with mean $0$ and satisfies 
+\[ X_t = \sum_j \varphi^j Z_{t-j} , \]
+ and 
+\[ X_t = \varphi X_{t-1} + Z_t. \]
+
+Then 
+\[ \alpha(1) = \Corr(X_2, X_1) = \Corr(\varphi X_1 + Z_2, X_1) = \varphi . \]
+
+$h \geq 2$:
+\[ \Pi_{(2,\dots,n)}X_{n+1} = \varphi X_n. \]
+But here 
+\begin{align*}  \alpha_X(h) = \Corr(X_{n+1} - \varphi X_n, X_1 - \Pi_{(2, \dots,h)}X_1)  \\ 
+ =  \Corr(Z_{n+1}, X_1 - \Pi_{(2, \dots,h)}X_1) = 0 \end{align*}
+  (because $Z_{n+1}  \perp \Span(X_1, \dots, X_n)$, which is the right part. Also the scalar product is continuous).
+
+
+\begin{lemma}
+Assume $(X_t)$ is weakly stationary with mean $0$., satisfying the following (mild) conditions: $\gamma(0) > 0$ and $\gamma(h) \rightarrow 0$ for $ |h| \rightarrow   \infty$. 
+
+\[ \Pi_h X_{h+1} = \varphi_{h,1} X_h + \dots + \varphi_{h,h} + X_1\]
+ is the best linear predictor for $X_{h+1}$ in terms of $X_1, \dots, X_h$. Then
+\[ \alpha_X(h) = \varphi_{h,h}. \] 
+\end{lemma}
+
+Let us continue the example. 
+
+The best linear predictor is in this example 
+\[ \Pi_h X_{h+1} = \varphi X_h , \] $(h\geq 2)$.
+
+The lemma 
+implies 
+\[ \alpha_X(h) =  \begin{cases} \varphi, & h =1 , \\  0 , & \text{otherwise} \end{cases} , \] $(h \geq 2)$.
+\end{example}
+
+
+
+
+This is important because of duality:
+
+\begin{example} (MA(1))
+Assume $Z_t \sim WN(0, \sigma^2),$ 
+\[  X_t = Z_t + \theta Z_{t-1}. \]
+Then 
+\[ \rho_X(h) = \begin{cases} \frac{v}{1+v^2} , &   h = 1 , \\ 0 , & \text{otherwise} . \end{cases} \]
+
+We can see this in the autocorrelation plot. In practice we estimate it and if they are close to $0$ and can conclude we have MA(1). 
+\end{example}
+
+\begin{lemma}
+Assume $(X_t)$ weakly stationary, mean $0$ such that $\gamma(0) > 0$ and $\gamma(h) \rightarrow 0$, $h \rightarrow \infty$ then $\Gamma_n$ is regular for every $n \in \N$. 
+\end{lemma}
+
+Regularity ensures there is only one solution in the previous lemma. Meaning $\varphi_{n,1}, \dots, \varphi_{n,n}$ are unique. 
+
+
+\section{ Spectral representation of time series}
+
+Assume $(X_t)$ is a $\C$ valued time series.
+\[ X_t = X_t^{(1)} + i X_t^{(2)} . \]
+
+\begin{align*} \E[X_t] = & \E[X_t^{(1)}] + i \E[X_t^{(2)} ] , \\ 
+\gamma(h) = & \Cov(X_{t+h}, X_t) = \E[ (X_{t+h} - \mu)\overline{(X_t - \mu)} ] \end{align*}
+
+Assume $(X_t)$ are stationary. $\gamma: \Z \rightarrow \C$. $\gamma$ is hermitian, 
+\[ \gamma(h) = \overline{\gamma(-h)}. \]  $|\gamma(h)| \leq \gamma(0) \in [0, \infty)$. $\gamma(h)$ is positive semidefinite i.e.
+\[ \sum_{i,j = 1}^n \alpha_i \gamma(i-j)\overline{\alpha_j} \geq 0. \]
+
+\begin{observation}
+$\gamma$ is an autocovariance function iff these properties hold (the first two).
+$X_t^{(2)}$ identically equals $0$, nmakes $\R$ values time series special case. 
+\end{observation}
+
+\begin{theorem} (\Important{Hergoltz})
+Function $(\gamma(h))_{h \in\Z}$ is positive semidefinite hermifian $\iff $ there exists a finite measure $\nu$ on $(-\pi, \pi]$ such that 
+\[ \gamma(h) = \int_{(-\pi,\pi]} e^{i h u}\nu(du). \] 
+Such a $\nu$ is unique.
+\end{theorem}
+
+Observe $\nu$ has its own distribution function $F : (-\pi, \pi] \mapsto \R_+$, 
+\[ F(x) := \nu((-\pi,x]) . \]
+
+% slika distribucije. Ima končno mnogo skokov, ker je mera končna. ne rabi končat pri 1. 
+
+If $\nu$ is absolutely continous with respect to Lebesgue measure, than there exists a \New{ spectral density} $f_X$, such that \[ \nu(-\pi, x] = \int_{(-\pi,x]}f_X(x) dt. \]
+ Then 
+\[ \gamma(h) = \int_{-\pi}^\pi e^{i h u}f_X(u) du , \; h = 1,2, \dots. \]
+
+\begin{theorem} (about spectral density)
+Assume $(X_t)$ is weakly stationary time series, such that $\sum_{h =-\infty }^\infty|\gamma(h)| < \infty$. Then $\nu$ has spectral density. Moreover 
+\[ f_X(\nu) = \frac{1}{2 \pi} \sum_{h = -\infty}^\infty\gamma(h) e^{-i h u}, \]
+$ u\in (-\pi, \pi]$ (inverse Fourier transform). Note that $f_X(\nu) \in [0, \infty)$. 
+\end{theorem}
+We call such time series \Important{short range dependant} time series. 
+
+Variance of the series if nothing but the integral of the spectral density: 
+\[ \gamma(0) = \int_{-\pi}^\pi f_X(u)du. \]
+
+\begin{example}
+\begin{enumerate}
+\item $Z_t \sim WN(0, \sigma^2)$, 
+\[ \gamma_Z(h) = \begin{cases} \sigma^2, & h = 0 \\ 0, & \text{otherwise} \end{cases} . \]
+ One can directly show the spectral density exists. 
+\[ f_Z(h) = \frac{\sigma^2}{2 \pi}, \]
+ which is a uniform density. 
+
+White noise contains all frequencies $u \in (-\pi, \pi]$ with same intensity! 
+\item  
+\[ X_t = A e^{i t u}, \] 
+$ \E[ A^2 ] = \sigma^2$. Direct calculation shows 
+\[ \nu = \sigma^2 \delta_u \] (Dirac measure). The period = $2 \pi / u$, where $u$ is the only frequency. 
+\end{enumerate}
+\vskip0.5cm
+
+If $(X_t)$ and $(Y_t)$ are uncorrelated then  $(X_t + Y_t)$ has the spectral measure 
+\[ \nu = \nu_X + \nu_Y. \]
+ The same holds for their spectral density functions if they exist. 
+
+Assume $(X_t)$ is weakly stationary, $\sum_{j=-\infty}^\infty |h_j| < \infty \Rightarrow $ 
+\[ Y_t = \sum_j h_j X_{t-j} \]
+ is well defined and weakly stationary. We can define the response function 
+\[ A(e^{-iu}) = \sum_j h_j e^{-u i j}. \]
+
+If $(X_t)$ has the spectral density $f_X$ then $(Y_t)$ has the spectral density 
+\[ f_Y(u) = |A(e^{-iu})|^2 f_X(u) . \] 
+
+\begin{theorem} (\Important{Cramer})
+Assume $(X_t)$is weakly stationary with mean $0$. Then there exists a random process $(Z(u))_{u \in(-\pi, \pi]}$ with 
+orthogonal increments (similar to independent in Brownian motion) and values in $\C$. 
+\[ X(t) = \int_{-\pi}^\pi e^{i t n}dZ(u) . \]
+Moreover 
+\[ \Var(Z(u_2) - Z(u_1)) = \nu(u_1, u_2], \; u_1, u_2 \in (-\pi,\pi]. \]
+
+This is a stochastic integral:
+$\int_a^bdZ(u) = Z(b) - Z(a)$.
+\end{theorem}
+
+Continue example.
+\[ Z(w) = \begin{cases} 0,  & w < n , \\ A , \text{otherwise} \end{cases} . \] 
+
+\[ \Var(Z(u_2) - Z(u_1)) = \sigma^2 \delta_u(u_1, u_2]. \]
+
+The natural estimator for $f_X$ is defined by 
+\[ w_j = \frac{2 \pi j}{n} \in (-\pi, \pi]. \]
+\[ \hat{f}_X(w_j) =\frac{1}{2\pi} I(w_j)= \frac{1}{2\pi} \sum_{|k| < n} \sqrt{\hat{\gamma}(k)e^{-ikw_j}} . \]
+
+This is not a consistent estimator. To make it more consistent we smooth it. 
+
+This is a {\bf periodogram}. We try to look at the time of time series. But we could look at frequencies (engineers do it a lot). And it is the same (dual). 
+\end{example}
+
+
+
+
+
+
+
+
+
+$ \Pacf \to \Ar $
+
+ocf  $\to  \Ma $
+
+$\Acf $
+
+arima.sim
+
+par $->$ splits plot into more parts
+
+qqmorm $->$ Normal Q-Q plot
+
+spec $->$ for spectral analysis
+
+spec.pgram $->$ smoothed periodogram
+
+periodogram
+
+\begin{observation}
+For $\R$-valued time series $f_X$ is symmetric (because of Fourier)! The frequencies are also divided by $2 \pi$ and that is why the interval we draw is $[0, 1/2]$.
+\end{observation}
+
+library TSA
+
+Check distribution smoothing. 
+
+locator $->$ reading points from a graph
+
+which.max
+
+You can also use this (frequencies) to detect the seasonality of the data.
+
+To test which peaks are significant is quite hard. 
+
+
+\chapter{Large sample theory (estimation of $\mu, \gamma, \rho$ and $ \alpha$)}
+
+
+
+\[ {\bf X} _n = (X_{n, 1}, \dots, X_{n,k}) : \Omega \rightarrow \R^k \]
+ random vectors, $n \in \N . $
+
+Recall ${\bf X}_n \overset{D}{\rightarrow}  {\bf X}$ if 
+\[ P(X_n \leq {\bf x}) \rightarrow P({\bf X} \leq {\bf x}) , \]
+ for all ${\bf x} \in \R^k$ in which ${\bf t} \rightarrow P({\bf X} \leq {\bf t})$ is continuous. 
+
+\[ {\bf X}_n \overset{P}{\rightarrow}  {\bf X} , \]
+ if for all $\epsilon > 0$ 
+\[  \lim_{n \rightarrow \infty} P(|X_n - {\bf X}| > \epsilon) = 0. \]
+ 
+\[ {\bf X}_n \overset{L_p}{\rightarrow} {\bf X} \]
+if 
+\[ ||X_n - {\bf x}||^p \rightarrow 0 . \]
+
+\[ {\bf X}_n  \overset{a.s.}{\rightarrow} {\bf X} , \]
+ if 
+\[ {\bf P}({\bf X}_n \rightarrow {\bf X}) = 1 . \]
+
+\begin{displaymath}
+ \xymatrix{
+  \overset{a.s}{\to} \ar[dr]   & \overset{ L_p}{\to} \ar[d] & \overset{D}{\to}  \\
+ & \overset{P}{\to} \ar[ur]  &  }
+\end{displaymath}
+
+
+\begin{theorem} (\Important{Portmanteau})
+The following are equivalent
+\begin{enumerate}
+\item \[ {\bf X}_n \overset{D}{\rightarrow} {\bf X} .\] 
+\item \[  \E[ f({\bf X}_n)] \rightarrow \E[f({\bf X})]  , \] for all $f: \R^k \rightarrow \R$ continuous and bounded 
+\item \[ P({\bf X}_n \in B) \rightarrow p({\bf X} \in B) , \] for all $B$ Borel set in $\R^k$, $P({\bf X} \in \delta B) = 0$
+\item \[ \limsup_n{P({\bf X} \in F)} \leq P({\bf X} \in F) , \] for all closed sets $F \subset \R^k$
+\item \[ \liminf_n{P({\bf X} \in G)} \ni P({\bf X} \in G) , \] for every open set $G \subset \R^k$
+\item \[ \E \left[ e^{i \langle t, {\bf X}_n \rangle} \right]  \rightarrow \E \left[e^{i\langle t, {\bf X} \rangle} \right] , \] for all ${\bf t} \in \R^k$
+\end{enumerate}
+\end{theorem}
+
+\begin{exercise}
+${\bf X}_n \overset{P}{\rightarrow} {\bf X}, {\bf Y}_n \overset{P}{\rightarrow} {\bf Y}$ on the same probability space, then 
+\[ ({\bf X}_n, {\bf Y}_n) \overset{P}{ \rightarrow} ({\bf X}, {\bf Y}) . \]
+\end{exercise}
+
+\begin{exercise}
+${\bf X}_n \overset{D}{ \rightarrow} {\bf X}, {\bf Y}_n \overset{D}{\rightarrow} {\bf Y}$ on the same probability space, then show by counterexample that we do {\bf not} need to have 
+\[ ({\bf X}_n, {\bf Y}_n) \overset{D}{ \rightarrow} ({\bf X}, {\bf Y}) . \]
+\end{exercise}
+
+\begin{theorem} (\Important{ continuous mapping theorem})
+Assume $ g: \R^k \rightarrow \R^m$ is measurable and continuous on the set $C \subset \R^k$ and $P({\bf X} \in C) = 1$, then 
+\[ {\bf X}_n \overset{*}{\rightarrow} {\bf X} \Rightarrow g({\bf X}_n) \overset{*}{ \rightarrow} g({\bf X}) , \]
+ for $ * = D, P, a.s.$
+\end{theorem}
+
+
+
+\begin{lemma}
+Assume ${\bf X}_n \overset{D}{\rightarrow} {\bf X}, {\bf Y}_n \overset{P}{\rightarrow} C$ on the same probability space, then 
+\[ ({\bf X}_n, {\bf Y}_n) \overset{D}{\rightarrow} ({\bf X}, C) .\]
+\end{lemma}
+
+\begin{exercise}
+Assume ${\bf X}_n \overset{D}{\rightarrow} {\bf X}$ and ${\bf Y}_n \overset{D}{\rightarrow} {\bf C}$ on the same probability space. Then
+\begin{enumerate}
+\item ${\bf X}_n + {\bf Y}_n \overset{D}{  \rightarrow} {\bf X} + {\bf C}$ for $k = m$
+\item ${\bf X}_n  {\bf Y}_n \overset{D}{ \rightarrow } {\bf X}  {\bf C}$ for $k = m$ or $k = 1$ or $m = 1$
+\item ${\bf X}_n / {\bf Y}_n \overset{D}{ \rightarrow} {\bf X} / {\bf C}$ for $k = 1$ and $c \neq 0$
+\end{enumerate}
+\end{exercise}
+
+\begin{proposition} (\Important{1st about approximation})
+${\bf X}_n \overset{D}{\rightarrow} {\bf X}, {\bf X}_n - {\bf Y}_n \overset{P}{\rightarrow} 0 \Rightarrow {\bf Y}_n \overset{P}{ \rightarrow } {\bf X}$.
+\end{proposition}
+\proof
+\[ {\bf Y}_n = {\bf X}_n + ({\bf Y}_n - {\bf X}_n) \overset{D}{ \rightarrow} {\bf X} + 0 , \]
+ and this is enough according to the previous exercise.
+% \ref
+\endproof
+
+\begin{exercise}
+\[ {\bf Y}_n \overset{D}{ \rightarrow} C \iff {\bf Y}_n \overset{P}{ \rightarrow} C\]
+ for $C \in \R^n$.
+\end{exercise}
+
+\begin{proposition} (\Important{2nd about approximation})
+Assume 
+\begin{enumerate}
+\item \[ {\bf Y}_{n,j} \overset{D}{\rightarrow} {\bf Y}_j, n \rightarrow \infty \]
+\item \[ {\bf Y}_j  \overset{D}{\rightarrow} {\bf Y}, j \rightarrow \infty \]
+\item \[ \lim_j \limsup_{n\rightarrow \infty}{P(|X_n - Y_{n,j}| > \epsilon)} = 0 \] for all $\epsilon > 0.$
+\end{enumerate}
+Then 
+\[ {\bf X}_n \overset{D}{\rightarrow} {\bf Y}. \]
+\end{proposition}
+\proof
+For all $F $ closed 
+\[ \limsup_n{P({\bf X}_n \in F)} \leq P({\bf Y} \in F) , \]
+ is enough. 
+\[ F^\epsilon = \{y | \inf_{x\in F}||{\bf y} - {\bf x}|| \leq \epsilon \} , \]
+ closed set. Then 
+\[ P({\bf X}_n \in F) \leq P(Y_{n j} \in F^\epsilon) + P(||Y_{n j} - X_n|| > \epsilon). \]
+ We take 
+\[ \limsup{P({\bf X}_n \in F)} \leq P(Y_j \in F^\epsilon) + \limsup{P(|X_n - Y_{n j}| > \epsilon)}. \]
+ We apply $\limsup_{j\to \infty}$ and get 
+\[ \limsup{P({\bf X})_n \in F} \leq P(Y \in F^\epsilon). \]
+
+If we let $\epsilon \rightarrow 0$ then the right side converges to 
+\[ P(Y \in F) , \] because the probability is continuous with respect to decreasing the segment of sets 
+\[ \bigcap_{\epsilon > 0} F^\epsilon = F. \]
+\endproof
+
+\begin{example}
+Assume estimator $T_n, S_n$ satisfy 
+\[ \sqrt{n}(T_n - \theta) \overset{D}{\rightarrow} N(0, \sigma^2) , \]
+ and 
+\[ \sqrt{n}\frac{T_n - \theta}{S_n} \overset{D}{\rightarrow} N(0,1) \] (by exercise \ref{ex:63}).
+Then approximately $(q - \alpha) 100 \%$ confidence interval for $\theta$ is $(T_n - \frac{S_n}{\sqrt{n}}Z_{\alpha/2},T_n + \frac{S_n}{\sqrt{n}}Z_{\alpha/2})$.
+\end{example}
+
+\begin{theorem} (\Important{Strong law of large numbers} )
+Assume $(X_n)$ iid with finite mean $\mu$. Then 
+\[ \overline{X}_n = \frac{1}{n} \sum _{i=1}^n X_i \overset{a.s.}{ \rightarrow}\mu . \]
+\end{theorem}
+
+
+\begin{theorem} (\Important{Central limit theorem - Levy})
+Assume $(X_n)$ iid with finite second moment $\sigma^2$. Then 
+\[ \sqrt{n}(\overline{X} - \mu)  \overset{D}{\rightarrow} N(0, \sigma^2). \]
+\end{theorem}
+
+
+\begin{observation}
+This also holds for random vectors. There is a stronger (\Important{Lindeberg}) version of the theorem, that allows
+ $(X_n)$ to be independent but not necessarily equally distributed.
+\end{observation}
+
+
+The question is: What if we have dependance? Can we still have the CLT?
+
+Time series $(X_t)$ is \New{ $m-$dependent}if for all $t \in \Z$ families of random variables $\{\dots, X_{t-1}, X_t\}$ and $\{X_{t + m + 1}, \dots\}$ are independent. 
+
+\begin{exercise}
+If $(Z_t) \sim IID$ and $X_t = Z_t + \theta Z_{t-1}$ is a MA(1) process, show $(X_t)$ is $1-$dependent.
+\end{exercise}
+
+\begin{exercise}
+Show $(X_t)$ is $0-$dependent $\iff$ $X_t$-s are independent random variables.
+\end{exercise}
+
+\begin{theorem} (\Important{CLT for m-dependent sequences})
+Assume $(X_t)$ is strictly stationary (otherwise we have no chance), m-independent with mean $0$, and with finite variance. Then 
+\[ \sqrt{n}\;\overline{X}_n \overset{D}{ \rightarrow} N\left(0, \sum_{n = -m}^m \gamma_X(h) \right) . \]
+\end{theorem}
+Ask if $\overline{X}_n \overset{P}{ \rightarrow} 0$ and how fast. Then 
+\begin{align*} \Var(\sqrt{n} \; \overline{X}_n) = \Var\left(\frac{X_1 + \dots + X_n}{\sqrt{n}}\right)  \\
+= \frac{1}{n} \sum_{i,j = 1}^n \Cov(X_i, X_j) = \frac{1}{n} \sum_{i,j = 1}^n \gamma(i-j) \\ 
+= \frac{1}{n} \sum_{h  = -n + 1}^{n-1}(n - |h|)\gamma_X(h). \end{align*}
+
+Assume $\sum_{h=-\infty}^\infty |\gamma(h)| < \infty$. Then the above equation $\rightarrow \sum_h \gamma_X(h)$ as $n \rightarrow \infty$. We see this by the dominated convergence theorem (we can therefore swap $\lim$ and $\sum$). 
+
+By the Chebyshev inequality $X_n$ is really converging to $0$ in probability: 
+\[
+ P(|\overline{X}_n - 0| > \epsilon ) \leq \frac{1}{n} \frac{Var \overline{X}_n}{\epsilon^2}   \rightarrow 0 
+\]
+
+\proof
+Note $\gamma(h) = 0$ for $|h| > n$ (there is no dependance). We showed 
+\[ \sqrt{n} \; \overline{X}_n = n \Var \overline{X}_n \rightarrow \sum_{h=-m}^m \gamma(h). \]
+ Fix $k > 2m$, $r = \lfloor n/k \rfloor$. $r k \leq n, n - rk < k$. 
+
+$\overline{X}_n = $ average of $X_i, i = 1,\dots,n$.
+
+\begin{align*} X_1, \dots, X_{k-m}, X_{k-m+1}, \dots, X_{k}, X_{k+1}, \dots, X_{2k-m}, \\
+ X_{2k-m+1},\dots,X_{2k}, \dots \dots, X_{rk-m+1}, \dots, X_{r_k}, X_{rk+1},\dots,X_{n}. \end{align*}
+
+ The sizes of these parts with $\dots$ are $k-m, m, k-m, \dots, m, \leq k-1$ if $ k \not | n$. 
+We denote them with 
+\[ B_{k,1}, R_{k,1}, \dots, B_{k, r}, R_{k, r}. \]
+ We introduce 
+\[ Y_{n,k} = \frac{1}{\sqrt{n}} (B_{k, 1} + \dots, B_{k,r}). \]
+ \[ \sqrt{n} \; \overline{X}_n = \frac{1}{\sqrt{n}} (X_1 + \dots X_n) = Y_{n, k} +  \text{remainder} , \]
+ which equals the sum of $R_{k,j}-$s divided by $\sqrt{n}$. Note that $B_{k,i}-$s are IID with finite 
+variance (calculated before the proof)!! 
+
+Because of this 
+\[ Y_{n,k} = \frac{1}{\sqrt{n}} \sqrt{kr} \frac{1}{\sqrt{k}} \frac{1}{\sqrt{r}} (B_{k,1} + \dots B_{k,r}). \]
+ The 
+\[  \frac{1}{\sqrt{r}} (B_{k,1} + \dots B_{k,r}) \rightarrow^d N(0, Var B_{k,1}) \] (all have the same variance). The 
+\[ \frac{1}{\sqrt{n}} \sqrt{kr} \rightarrow 1. \] 
+\[ Var B_{k,1} = Var(X_1, \dots + X_{k-m}) = \sum_{|h| \leq m}(k-m-|h|)\gamma(h) . \]
+
+Together we get 
+\[ Y_{n,k} \rightarrow N(0, \sum_{|h| \leq m}(\frac{k-m-|h|}{k})\gamma(h)) := V_k. \]
+ When we let $k \rightarrow \infty$ each of 
+\[ (\frac{k-m-|h|}{k} \rightarrow 1. \]
+ Therefore 
+$ Y_k \overset{D}{\rightarrow} N(0, V)$ as $k \rightarrow \infty$ where 
+\[ V = \sum_{n = -m}^m \gamma(h). \] 
+
+It remains to show that 
+\[ \sqrt{n}\; \overline{X}_n \approx Y_{n,k} , \]
+ in the sense of preposition (5). 
+\[ \lim_k \limsup_n P(|\sqrt{n}\; \overline{X}_n - Y_{n, k}| > \epsilon) \leq \lim_k \limsup_n \frac{Var(1/\sqrt{n}(R_{k,1} + \dots R_{k,r}))}{\epsilon^2} . \]
+ $R_{k,i}$ are independent as well and similar to $B_{k,i}$. So 
+\[ \Var(R_{k,i}) = \sum_{|h| \leq m}(m- |h|)\gamma(h) , \]
+ for $r = 1, \dots, r-1$. 
+\[ Var(R_{k,r}) = \sum_h ((n -rk) + m - |h|)\gamma(h). \]
+
+The limit
+\begin{align*} \lim_k \limsup_n \frac{Var(1/\sqrt{n}(R_{k,1} + \dots R_{k,r}))}{\epsilon^2} \\
+ \leq \lim_k \limsup_n (r-1) \sum_h \frac{m \gamma(h)}{n} + \sum_h \frac{m+k}{n}|\gamma(h)|.
+\end{align*}
+ Both things tend to $0$. Therefore $\sqrt{n}\; \overline{X}_n \rightarrow^d Y$. 
+\endproof
+
+
+All our theorems in the sequel can be proved using a similar (same) argument (called \New{ large block/small block}.
+
+Assume $(X_t)$ satisfies the conditions of the theorem and $\E[ X_t] = \mu \neq 0$. It is clear that 
+\[ Y_t = X_t - \mu \] 
+satisfies the same conditions and 
+\[ \sqrt{n} (\overline{X}_n - \mu) = \sqrt{n}\; \overline{Y}_n \rightarrow^d N(0,V). \]
+ Observe 
+\[ \gamma_X(h) = \gamma_Y(h). \]
+ This is how we use the theorem. $v = \sum_{|h| \leq m} \gamma(h)$.
+
+
+Now we know a CLT, that does not involve IID data. So $(1 - \alpha) 100 \%$ confidence interval for $\mu$ is 
+$(\overline{X}_n +- \sqrt{\frac{v}{n}}Z_{\alpha/2})$. 
+
+\section{Estimating the mean of MA(q) processes}
+
+\begin{example} (MA(1))
+(assume normal stuff) $\Rightarrow$ $ X_t$ is strictly stationary and 1-dependent, remember the $\gamma_X(h)$. Theorem 
+(8) now proves 
+\[ \sqrt{n} \; \overline{X}_n \overset{D}{ \rightarrow} N(0, \sigma^2 (1 + \theta^2 + 2\theta)) . \]
+\end{example}
+
+\begin{definition}
+Assume $Z_t \sim WN$, $\theta_i$ are real numbers and 
+\[ X_t = Z_t + \theta_1 T_{t-1} + \dots + \theta_q + Z_{t-q}. \]
+ We ask $\theta_q \neq 0$. This is MA(q).
+\end{definition}
+
+\begin{exercise}
+Show that MA(q) process has auto correlation function 
+\[ \gamma_X(h) = \begin{cases} 0 , & |h| > q , \\ \sigma^2 \sum_{j = 0}^{q - |h|}\theta_k \theta_{j + |h|} , & \text{otherwise} \end{cases} \]
+ where $\theta_0 = 1$. The mean of the process is $0$.
+\end{exercise}
+
+\begin{exercise}
+Show that MA(q) process satisfies the following:
+\[ \sum_{|h| \leq q} \gamma(h) = \sigma^2(\sum_{j = 0}^q \theta_j)^2 . \]
+ In particular
+\[ \sqrt{n } \; \overline{X}_n \rightarrow^d N(0, \sigma^2(\sum_{j=0}^1 \theta_j)^2), \]  
+if $(Z_t) \sim IID(0, \sigma^2)$.
+
+If 
+\[ Y_t = \mu + X_t, X_t \sim MA(q) , \]
+ with iid noise 
+\[ \sqrt{n}(\overline{Y} - \mu) \rightarrow^d N(0, \sigma^2(\sum_{j=0}^1 \theta_j)^2). \]
+\end{exercise}
+
+\section{Estimating the mean of linear processes}
+
+MA is just a special case of linear processes! 
+
+\begin{proposition}
+Assume $(X_t)$ is weakly stationary with mean $\mu$.
+\begin{enumerate}
+\item if $\gamma(h) \rightarrow 0 \Rightarrow \Var(\overline{X}_n) \rightarrow 0$ and $\overline{X}_n \rightarrow^p \mu$.
+\item if $\sum_{h = -\infty}^\infty\gamma(h) < \infty \Rightarrow n \Var \overline{X}_n \rightarrow \sum_h \gamma_X(h)$
+\end{enumerate}
+\end{proposition}
+\proof
+(2) was already shown before (when showing the dominated convergence)
+(1)  
+\begin{align*} \Var \overline{X}_n = \frac{1}{n^2} \sum_{|h| \leq m} (n - |h|)\gamma(h) \\ 
+\leq \frac{1}{n} \sum_h |\gamma(h)| \rightarrow 0, \end{align*}
+ since $|\gamma(h)| \rightarrow 0$ (Cesaro mean). 
+
+Because $\overline{X}_n$ is unbiased the Chebyshev inequality shows 
+\[ P(|\overline{X}_n - \mu| > \epsilon) \rightarrow 0 . \]
+$\Rightarrow \overline{X}_n \overset{P}{\rightarrow} \mu$.
+\endproof
+
+\begin{theorem}
+Assume $(Z_t) \sim IID(0, \sigma^2), (\Psi_j)$ satisfies 
+\[ \sum_{j = -\infty}^\infty \Psi_j< \infty, \sum_j \Psi_j \neq 0 \]
+ then the stochastic process satisfies 
+\[ X_t = \mu ' \sum_j \Psi_j Z_{t-j} , \]
+\[ \sqrt{n}(\overline{X}_n - \mu) \overset{D}{\rightarrow} N(0, V), V = \sum_{h=-\infty}^\infty \gamma(h). \]
+\end{theorem}
+
+Approx $95\%$ confidence interval for $\mu$ is 
+\[ \overline{X}_n +- 1.96 \sqrt{\frac{v}{n}}). \]
+ Of course $\gamma$ is unknown, so we have to estimate it. But we cannot estimate all of them.
+ We use 
+\[ \overline{X}_n +- 1.96 \sqrt{\frac{\hat{v}}{n}}) , \]
+ where  
+\[ \hat{v} = \sum_{|h| \leq n} \frac{(n - |h|)}{n}\hat{\gamma}(h). \]
+
+
+\begin{exercise}
+Find the asymptotic variance $V$ for $\sqrt{n} \overline{X}_n$ in the case of $\Ar(1)$ (normal with), $(Z_t) \sim IID(0, \sigma^2)$.
+\end{exercise}
+
+Condition $\sum_h |\gamma(h)| < \infty$ is called short range dependance condition. CLT can be expanded from 
+$m-$dependent and linear processes to more general stationary processes using the concept of \New{ mixing}. 
+
+\section{Estimation of $\gamma, \rho, \alpha$ (for general linear processes)}
+
+$\hat{\gamma}(h) = 1/n \sum_{t = 1}^{n - |h|} (X_t - \overline{X}_n)(X_{t+h}-\overline{X}_n)$
+
+\[ \hat{\rho}(h) = \hat{\gamma}(h) / \hat{\gamma}(0) , \] 
+ $\hat{\Gamma}_n , $
+ as before and 
+\[ \hat{R}_n = \frac{\hat{\Gamma}_n}{\hat{\gamma}(0)}. \]
+ One can show all are positive semidefinite and they are consistent for linear processes.
+
+\begin{theorem}
+Assume $Z_t \sim IID(0, \sigma^2), \E[Z_t^4] < \infty$ and $\sum_j |\Psi_j| < \infty$ then the weakly stationary process 
+\[ X_t = \mu ' \sum_j \Psi_j Z_{t-j} \]
+satisfies
+\[ \sqrt{n} \left( \begin{array}{c} \hat{\rho}_1 \\ \vdots \\ \hat{\rho}_n \end{array} \right) - 
+\left( \begin{array}{c} \rho _1 \\ \vdots \\ \rho_n \end{array} \right)  \overset{D}{\rightarrow} N(0,W), \]
+ where $W$ is the covariance matrix given by Bartlett formula:
+\begin{align*}
+ w_{i j} = \sum_{k = -\infty}^{\infty} \left[\rho(k + i)\rho(k+j) \right. \\
+\left. + \rho(k-i) \rho(k+j)-2\rho(i)\rho(j)-w\rho(i)\rho(k)\rho(k+j) - 2\rho(j)\rho(k)\rho(k+i) \right] . 
+\end{align*}
+
+\end{theorem}
+
+
+\begin{observation}
+A similar theorem holds for $\hat{\gamma}-$s. 
+\end{observation}
+
+
+\begin{example}(IID case)
+Assume $(X_t) \sim IID$, $EX_t^4 < \infty \Rightarrow \rho_X(h) = 0$ for $h \neq 0$. Bartlett-s formula $\Rightarrow$
+$w_{ij} = \delta_{ij}$ (Kronecker's delta).
+
+So in this case $W = I$ (identity). Asymptotically speaking 
+\[ \hat{\rho}(j) \sim N(0, 1/n), j=1, \dots, h , \]
+ and independent from each other! 
+\end{example}
+
+This is good, because the theorem suggests a test with null hypothesis $H_0: (X_t)$ is $ IID$.
+
+Tests:
+\begin{enumerate}
+\item Visual test: approximately $95\%\; \hat{\rho}(i), i = 1, \dots, h$ should fall in 
+\[  (-1.96/\sqrt{n},1.96/\sqrt{n}). \]
+ If $h = 40$ there should be at most $2-3$ of these guys outside of the interval. And none should be too far from $0$.
+\item Portmanteau test: $H_0: \rho(k) = k, k = 1, \dots, h$, since $\sqrt{n}\hat{\rho}(i) \approx^{iid} N(0,1), i = 1, \dots, h$. Than $Q_{n,h} = n \sum_i \hat{\rho}(i)^2 \rightarrow^d \chi^2(h)$. We reject that if $Q_{n,h} > \chi^2_{1-\alpha}(h)$.
+\item Ljung Box test: $~Q_{n, h} = n \sum_i \frac{n+2}{n-i}\hat{\rho}(i)^2 \rightarrow^d \chi^2(h)$ under $H_0$, which converges faster (empirically tested)
+\end{enumerate}
+
+\begin{example} (MA(q) process)
+$Z_t \sim IID(0, \sigma^2)$. Bartlett-s formula gives for $k > q$ that 
+$\sqrt{n} (\hat{\rho}(k) - 0) \rightarrow N(0, 1 + 2\rho(1)^2 + \dots + 2\rho^2(q))$.
+
+Unfortunately $\hat{\rho}(k)$ are {\bf not} asymptotically independent any more. Therefore graph of $\hat{\rho}-$s is hard to interpret.
+\end{example}
+
+Recall : if $(X_t)$ is weakly stationary with mean $0$ and $\gamma(h) \rightarrow 0$ than all $\Gamma_n$ are regular and 
+$\alpha(h) = \varphi_{n,k}$, where $\Pi_{n} X_{n+1} = \varphi_{11} + \dots + \varphi_{n n}X_1$ and $\varphi -$s solve the equation, as before.
+% ref
+To estimate $\alpha$ we set $\hat{\alpha}(h) = \hat{\varphi}_{n n}$, the solutions of the same equations with $\Gamma, \gamma$ replaced with $\hat{\Gamma}, \hat{\gamma}$. 
+
+Asymptotic normality of $\hat{\gamma}-$s and Slutsky imply $\alpha -$s are asymptotically normal, but the covariance matrix is even more complicated.  
+
+\vskip1cm
+
+More R:
+
+library stats
+
+library TSA $->$ good, because it does not plot $\rho(0)$
+
+Box.test $->$ Portmanteau test. We still have to specify $h$. If $p-$value small we reject the hypothesis.
+parameter type = "Ljung" $->$ Ljung test
+
+
+
+
+
+
+\chapter{Arma Processes}
+
+\begin{definition}
+Weakly stationary time series $ (X:t) $ is called \New{$ \Arma(p,q)$} (auto regressive moving average) process, if it 
+satisfies 
+\[ X_t - \phi _1 X_{t-1} - \ldots \phi _p X_{t-p} = Z_t + \theta _1 Z_{t-1} + \ldots + \theta _q Z_{t-q}  , \label{eq:41} \]
+for some real numbers $ \phi _1, \ldots , \phi _p, \theta _1, \ldots \theta _q $ and $ (Z_t) \sim WN(0, \sigma ^2) $. 
+$ \phi _i$ -s and $ \theta _i $ -s are called parameters of the model.
+\end{definition}
+
+For simplicity we very often set $ (Z_t) \sim IID(0, \sigma ^2) $ .
+
+Using backward shift operator $ B X_t = X_{t-1} $ and two polynomials $ \phi , \theta $
+\begin{align*}
+\phi(z) = & 1 - \phi _1 z - \ldots - \phi _p z^p \\
+\theta (z) = & 1 + \theta _1 z + \ldots + \theta_q z^q \end{align*}
+we can write \ref{eq:41} as 
+\[ \phi (B) X_t = \theta(B) Z_t . \]
+
+\begin{example} ($\Ma(2) $)
+\[ X_t = Z_t + \theta_1 Z_{t-1} + \theta_2 Z_{t-2} , t\; t \in \Z . \]
+$(Z_t) \sim \Wn(0, \sigma ^2) \Rightarrow (X_t) $ is weakly stationary and well defined.
+\begin{align*} 
+\phi(z) = & 1 \\
+\theta (z) = & 1 + \theta _1 z + \theta_2 z^2 
+\end{align*}
+$ (X_t) \sim \Ma(2) = \Arma(0,2) $.
+\end{example}
+
+\begin{example} ($ \Ar(p) $)
+We are looking for a stationary sequence 
+\[ X_t = \phi _1 X_{t-1} + \ldots \phi _t X_{t-p} + Z_t  \]
+We now have
+\begin{align*}
+\phi(z) = & 1 - \phi _1 z - \ldots - \phi _p z^p \\
+\theta(z)  = & 1 
+\end{align*}
+We know that these equations do not have a stationary solution in general.
+
+Recall : 
+\[p=1, \psi _1 = \pm 1 . \]
+
+If $ \phi _1 \in (-1, 1) $ , then stationary solution exists and it is 
+\begin{align*} 
+X_t = & \sum _{j=0} ^{\infty} \phi ^j Z_{t-j}  \\
+\E[X_t] = & 0
+\end{align*}
+
+For $ | \phi _1 | >1 $ there exists a non-causal solution 
+\[ X_t = \sum _{j=1} ^{\infty} - \phi ^{-j} Z_{t+j} . \] 
+
+
+\end{example}
+
+
+If real sequences $ (a_n), (b_n) $ satisfy $ \sum_j |a_j| < \infty , \sum _j |b_j| < \infty $ , 
+we know that power series 
+\[ \sum _{j \in \Z} a_j z^j , \; \sum _{j \in \Z} b_j z^j , \]
+converge. So the same holds for 
+$\xi (z) = a(z) b(z)$ 
+\[ a(B) b(B) X_t = \xi (B) X_t . \]
+
+
+Recall coefficients of a series representation of a function
+\[ \psi (z) = \sum _j \psi _j z^j ,  \]
+are uniquely defined.
+
+
+\begin{theorem}
+Suppose polynomials $ \phi $ and $ \theta $ have no common zeros in $ \C$, then 
+\begin{itemize}
+\item if \[ \phi (z) \neq 0 , \; \forall z \in \C , |z| = 1 , \]
+then there exists a linear process $ (X_t) $ satisfying $ \Arma$ equation. 
+\item Process $ (X_t) $, satisfying previous condition, is causal if and only if 
+\[ \phi (z) = , \; \forall z \in \C, |z| \leq 1 . \label{eq:4i} \]
+\end{itemize}
+\end{theorem}
+
+\begin{remark} 
+Under assumption in \ref{eq:4i} linear representation of $ (X_t) $ in 
+terms of $ (Z_t ) $ is determined by $ X_t = \psi (B) Z_t $, where
+\[ \psi (z) = \sum_{j=- \infty} ^{\infty} \psi _j z^j = \frac{ \theta(z) }{ \phi(z)} , \]
+(it absolutely converges at least on the edge of a circle in $ \C $. )
+\end{remark}
+\proof 
+\begin{enumerate}
+\item
+ Since $ \phi (z) \neq 0 , \; \forall z \in \C , |z| = 1 $, then  it follows that
+\[ \exists 0 < r < 1 < R < \infty ,  \; \phi (z) \neq 0 , \; \forall z \in \mathcal{R} = \{ y: r < |y| < R \} . \]
+ 
+On $ \mathcal{R} $ function 
+\[ \psi (z) = \frac{ \theta(z) }{\phi(z)}  \] 
+is analytic, therefore we can write it in Laurent series 
+\[ \psi (z) = \sum _{j=- \infty } ^{\infty} \psi _j z^j , \] 
+which converges absolutely and uniformly on every compact subset of $ \mathcal {R} $.
+It therefore follows that
+\[    \sum _{j=- \infty} ^{\infty} | \psi _j | <  \infty  , \]
+therefore  (lemma chapter I % ref )
+\[ X_t = \psi (B) Z_t , \]
+is well defined and stationary. Moreover 
+\[ \phi (B) X_t  = \underbrace{ \phi(B) \psi(B) } _{ \phi(z) \cdot \psi(t) = \theta(z) } Z_t = \theta (B) Z_t . \]
+
+\item
+\begin{itemize}
+\item[$\Rightarrow$] To prove this, assume $ \phi (z) \neq 0 , \forall z \in \C, |z| =  \leq 1 $, therefore it holds that $ \exists \epsilon >0 $, such that 
+\[ \phi (z) \neq 0 ,  \; \forall |z| < 1 + \epsilon . \]
+It then follows that 
+\[ \psi (z) = \frac{ \theta (z) }{ \phi (z) } , \] 
+is analytical on $ \{ z \in \C ; |z| <1 + \epsilon \} $. Therefore
+\[ \psi (z) = \sum _{j=0} ^{\infty}  \psi _j z^j . \] 
+This power series converges absolutely and uniformly on each compact subset of set $ \{ z \in \C, |z| < 1 + \epsilon \} $.
+\[ \Rightarrow \sum _{j=0} ^{\infty} |\psi _j | < \infty \Rightarrow X_t = \sum _{j=0} ^{\infty} \psi _j Z_{t-j} , \]
+is well defined and 
+causal .
+\item[$\Leftarrow $] Exercise.
+\end{itemize}
+\end{enumerate}
+
+Recall for $ (Z_t) \sim \Wn(0, \sigma ^2) $ and $ ( \psi _j) : \sum _j |\psi _j | < \infty $.
+\[ X_t = \sum _{j= - \infty }^{\infty} \psi _j Z_{t-j} , \]
+is weakly station by lemma of chapter I % ref
+
+
+Moreover 
+\[ \gamma _X (h) = \sigma ^2 \sum _{j= - \infty } ^{\infty} \psi _j \psi _{j+|h|} , \]
+and 
+\[ \rho _X(h) = \sum _{j=-\infty} ^{\infty} \psi _j \psi _{j + |h| } . \]
+
+
+\endproof
+
+
+\begin{theorem}
+Suppose $ \phi $ has a zero on the circle $ \{ z\in \C , |z | = 1 \} $, which is not zero of $ \theta $, then corresponding $ \Arma $ equation has {\bf no stationary solutions }.
+\end{theorem}
+
+\begin{example} ( $ \Ar(1) $ )
+\[ X_t - \phi X_{t-1} = Z_t , \]
+and 
+
+\begin{align*}
+\phi(z)  =& 1 - \phi z \\
+\theta(z) =& 1
+\end{align*}
+$ |z| = 1 \iff | \phi |  \iff \phi = \pm 1 $.
+\end{example}
+
+
+\begin{example} ($\Arma(2,1) $ process)
+
+Suppose $ \Arma $equations are
+\begin{align*}
+X_t - X_{t-1} + \frac{1}{4} X_{t-2} = Z_t + Z_{t-1} \\
+(1 - B + \frac{1}{4} B^2 ) X_t = (1 + B) Z_t 
+\end{align*}
+
+therefore
+
+\begin{align*}
+\phi(z) = & 1 - z + \frac{1}{4} z^2 = (1 - \frac{z}{2} ) ^2 \\
+\theta (z) = & 1 + z
+\end{align*}
+which means that $ (X_t ) $ is causal. 
+If we calculate further, we get
+\begin{align*} 
+\psi (z) = \frac{\theta(z) } { \phi(z)} = \frac{1+z}{  1 - z + \frac{1}{4} z^2 } \\
+= \sum_{j=0} ^{\infty} \psi _j z^j 
+\end{align*}
+We get the difference equation:
+\begin{align*}
+k= 0 : & \quad \psi _0 = 1 \\
+k=1 : & \quad \psi _1 - \psi _0 = 2 \\
+k \geq 2 : & \quad \psi _k - \psi _{k-1} + \frac{1}{4} \psi _{k-2} = 0
+\end{align*}
+One can show that solution to the above equation is of the form
+\begin{align*}
+n \geq 0 : & \quad \psi _n = 2^{-n} \left( \alpha + \beta n \right)  \\
+n = 0 : & 1 = \alpha + \beta \cdot 0 \Rightarrow \alpha = 1 \\
+n = 1 : & \quad 2 = \frac{1}{2} ( 1 + \beta) \Rightarrow \beta = 3 
+\end{align*}
+The solution is
+\[ \psi _n = (1 + 3 n) \frac{1}{2^n} . \]
+\end{example}
+
+
+\begin{exercise}
+Show that $ \Arma(1,2) $ equations 
+\[  (1 - \frac{1}{2} B) X_t = (1 + \frac{1}{2} B) (1 + 0.7 B) Z_t , \]
+has a causal weakly stationary solution and find coefficients in the linear representation 
+\[ X_t = \sum _{j=0} ^{\infty} \psi _j z_{t-j} . \]
+\end{exercise}
+
+
+
+\begin{definition}
+$\Arma(p,q) $ process $ (X_t) $ is \New{invertible} if for some sequence  $ ( \pi _j) _{j \in \N } $ satisfies
+\[ \sum _{j=0} ^{\infty} | \pi _j| < \infty , \]
+and 
+\[ Z_t = \sum _{j=0} ^{\infty} \pi _j X_{t-j} . \]
+\end{definition}
+
+ 
+\begin{theorem}
+Suppose $ (X_t) $  is weakly stationary $ \Arma $ process, such that $ \phi $ and $ \theta $ have
+no common zeroes. Then $ (X_t ) $ is invertible $ \iff $ 
+\[ \theta (z) \neq 0 , \; \forall z \in \C, |z| \leq 1 . \]
+\end{theorem}
+
+\begin{example}
+\[ X_t = Z_t + \frac{1}{2} Z_{t-1} , \] 
+is invertible
+
+\[ X_t = Z_t + 1.1 Z_{t-1} , \]
+is not invertible, since $ \theta (z) = 1 + 1.1 z $ has a zero in $ \{ z\in \C , |z| \leq 1 \} $ .
+\end{example}
+
+
+
+\section{ Functions $ \gamma, \rho $ and $ \alpha $ for  $ \Arma $ process }
+
+Assume $ (X_t ) $ is causal $ \Arma $ such that 
+\[ \phi (B) X_t = \theta (B) Z_t , \; t \in \Z , \]
+therefore 
+\[ X_t = \sum _{j=0} ^{\infty} \psi _j Z_{t-j} . \]
+
+From lemma in chapter 1 % ref
+it follows that $ \E [ X_t ] = 0 $, 
+\[ \gamma (h) = \E\left[ X_t X_{t+h} \right] = \sigma ^2 \sum_ {j=0} ^{\infty} \psi _j \psi _{j+|h|} . \]
+
+\begin{example}
+\begin{enumerate}[alph]
+\item
+$ \Ma(q) $ process 
+\begin{align*} 
+ X_t = & Z_t + \theta_1  Z_{t-1} + \ldots + \theta_q Z_{t-q} \\
+\gamma _X(h) = & \sigma ^2 \sum _{j=0} ^{q- |h| } \theta_j \theta_{j+ |h| } . 
+\end{align*}
+
+
+\item $ \Arma(1,1) $ process 
+\[ X_t - \phi X_{t-1} = Z_t + \theta Z_{t-1} . \]
+Suppose $ | \phi | < 1 $ , then 
+\[ X_t = \sum_{j=0} ^{\infty} \psi _j Z_{t-j} . \]
+\begin{align*}
+ \psi (z) = \frac{ \theta(z) }{ \phi(z)} = \frac{ 1 + \theta z}{ q - \phi z} = ( 1 + \theta z) \cdot \sum _{j=0} ^{\infty} ( \phi z) ^j \\
+= 1 + \sum _{k=1} ^{\infty} z^k \phi ^{k-1} (\phi + \theta) . 
+\end{align*}
+
+\begin{align*} 
+\gamma _X(0) = & \sigma ^2 \cdot \sum _{j=0} ^ {\infty} \psi _j ^2 \\
+= & \sigma ^2  (1 + ( \phi + \theta ) ^2 \cdot \underbrace{ \sum_{k'=0} ^{\infty} \phi ^{2k'} \big) } _{ \frac{1}{1- \phi ^2} } = 
+\sigma ^2 \left( 1 + \frac{ ( \theta + \phi)^2}{1 - \phi ^2 } \right) 
+\end{align*}
+
+\begin{align*} 
+\gamma(1) = \ldots = \sigma ^2 \left( (\theta + \phi ) + \frac{ ( \theta + \phi) ^2 \cdot \phi }{ 1 - \phi ^2 } \right) 
+\end{align*}
+
+\begin{align*}
+\gamma(h) = \phi ^{h-1} \gamma(1) , \; h \geq 2  \; ( \searrow 0 \text{ exponentialy fast}) 
+\end{align*}
+For $ \sum | \gamma (h) | < \infty $ we say, that we have short range dependence!
+
+\item $ \Ar(2) $ process 
+
+assume 
+\[  X_t - \phi _1 X_{t-1} - \phi _2 X_{t-2} = Z_t  \label{eq:ar3} , \]
+$  Z_t \sim \Wn(0, \sigma^2 ) $ , we then have
+\begin{align*} \phi(z) & =  1 - \phi _1 z - \phi _2 z^2 \\
+ & = \left( 1 - \frac{z}{ \xi _1} \right) \left( 1 - \frac{z}{\xi_2} \right)  
+\end{align*}
+where $ \xi _1 , \xi _2 $ are zeros of $ \phi $, assume
+\[ | \xi _1| >1 \wedge  |xi _2 | > 1 . \]
+We therefore have
+\[ X_t = \sum _{j=0} ^{\infty} \psi _j Z_{t-j} . \]
+Moreover $  \E [X_t] = 0 $ and $ \psi _0 = 1 $ . To get 
+$ \gamma _X (h) $, we multiply \ref{eq:ar3} by $ X_t , X_{t-1} \ldots  $ and calculate $ \E[ \ldots ] $ of the resulting expression.
+\begin{align*} \gamma _X (0) - \phi _1 \gamma _X (1) - \phi _2 z\gamma _X(2) = \E[X_t Z_t] = \sigma ^2 \psi _0  = \sigma ^2 , \\
+\gamma _X(k) - \phi _1 \gamma _X(k-1) - \phi_2 \gamma_X(k-2) = 0 . \label{eq:ar4} \end{align*}
+
+Solution to difference equations \ref{eq:ar4} depends on characteristic polynomial:
+\[ 1 - \phi _1 z - \phi _2 z^2 = 0 . \]
+For simplicity assume that 
+\[ \xi _1 = r e^{i \theta} , \; \xi _2 = r e^{- i \theta } , \; \theta \in [0, 2 \pi ], r \geq 1 . \]
+Solution can be found as 
+\[ \gamma(h) = \frac{ \sigma ^2 r ^4}{(r^2 - 1}  \frac{r^h \sin(h \theta + \psi ) } { (r^4 - 2 r^2 \cos(2 \theta + 1) \sin(\theta) } . \]
+We see that $ \gamma (h) \searrow 0 $ exponentially fast. 
+ \[ \phi = \arctan\left( \frac{r^2 + 1}{r^2 -1} \tan(\theta) \right) . \]
+
+\end{enumerate}
+\end{example}
+
+
+
+{\bf PACF :} Recall that $ \Pacf $ satisfies :
+\begin{align*} 
+\alpha _X(1) = \rho _X(1)  \\
+\alpha _X(h) = \phi _{h,h} ,
+\end{align*}
+where 
+\[ \Gamma _h \left( \begin{array}{c}  \phi _{h1} \\ \vdots \\ \phi _{hh} \end{array} \right) = \left( \begin{array}{c} \gamma _X(1) \\ 
+\vdots \\ \gamma _X(h) \end{array} \right) . \]
+
+
+For $ \Ar(1) , X_t - \phi X_{t-1} = Z_t , | \phi | < 1 $ we get 
+\[ \alpha _X(h) = \begin{cases} \phi ,& h =1 \\
+0 ,& h \geq 2 \end{cases} . \]
+\[ \Pi _h X_{h+1} = \phi X_{h} = \phi _{h1} X_h + \ldots + \phi _{hh} X_1 . \]
+
+\begin{example}{( $ \Ar(p) $)}
+$ \alpha _X(p) = \phi _p $ , $ \Pi _h X_{h+1} = \phi _1 X_h + \ldots \phi _p X_{h+1 - p} + \ldots $ and 
+\[ \alpha _X(hp) = 0  . \] 
+\end{example}
+
+\begin{example} {( $ \Ma(1) $ )} 
+\[ X_ t = Z_t + \theta Z_{t-1} . \]
+One can show (Brockwell-Davis), that
+\[ \alpha _X(h) = \phi _{h h} = \ldots = \frac{ -(- \theta ) ^{-h} }{ ( 1 + \theta ^2 + \ldots + \theta ^{2h} ) } , \]
+which goes $ \searrow 0 $ exponentially fast.
+\end{example}
+
+\Important{Duality:} $ \alpha , \rho $ . By plotting $ \hat {\alpha } , \hat{\rho} $ one can get an idea if $  \Ar $ or $ \Ma $ model is suitable.
+
+\section{ Estimation fo $ \Arma $ processes }
+$ \overline{X} _n = \hat{\mu}  , \hat{\alpha}, \hat{\rho} , \hat{\gamma} $ were studied in chapter 3.
+
+The question is how to estimate $ \phi _1, \ldots \phi _p , \theta _1, \ldots \theta _q , \sigma ^2 $ .
+
+\New{ Yule - Walker estimators }
+Suppose we want to estimate causal $ \Ar(p) $ model.
+\[ X_t - \phi _1 X_{t-1} \ldots - \phi _p X_{t-p} = Z_t .  \label{eq:ar5} \]
+
+Idea: multiply  \ref{eq:ar5} by $ X_t, X_{t-1} , \ldots $ and calculate the expectation of the resulting expression. 
+\begin{align*} 
+  \E[X_t ^2 ]  - \phi _1 \E[X_t X_{t-1} ] - & \ldots \phi _p \E[X_t X_{t-p} ] = \E [X_t Z_t ]  \\
+\gamma_X(0) - \phi _1 \gamma _X(1) - &\ldots - \phi _p \gamma_X(p) = \sigma^2 \\
+\gamma_X(1) - \phi _1 \gamma _X(0) - & \ldots - \phi _p \gamma_X(p-1) = 0 \\
+& \vdots \\
+\gamma_X(p) - \phi _1 \gamma _X(p-1) - & \ldots - \phi _p \gamma_X(0) = 0 ,
+\end{align*}
+These are \Important{Prediction equations} .
+
+\[ \Gamma _p \left( \begin{array}{c} \phi _1 \\ \vdots \\ \phi _p \end{array} \right) = \left( \begin{array}{c} \gamma (1) \vdots \\ \ gamma (p) \end{array} \right) . \]
+
+Note that we can write the first one of prediction equations as
+\[ \gamma (0)  - \left< \left( \begin{array} {c} \phi _1 \\ \vdots \\ \phi _p \end{array} \right) , \left( \begin{array} {c} \gamma(1) \vdots \gamma(p) \end{array} \right) \right> , \]
+Y-W: substitute $ \gamma $ by $ \hat{\gamma} $ to get 
+\Important{ Yule Walker equations : }
+\begin{align*}
+ \hat{\Gamma} _p  \left( \begin{array} {c} \hat{\phi} _1 \\ \vdots \\ \hat{\phi} _p \end{array} \right) = \left( \begin{array}{c} \hat{\gamma}(1) \\ \vdots \\ \hat{\gamma}(p) \end{array} \right)  , \\
+\hat{\sigma} ^2 = \hat{\gamma}(0) - \left> \left(\begin{array}{c} \hat{\phi}_1 \\ \vdots \\ \hat{\phi}_p \end{array} \right) , \left( \begin{array}{c} \hat{\gamma}(1) \\ \vdots \\ \hat{\gamma} (p) \end{array} \right) \right> 
+\end{align*} 
+one can show that if $ \hat{\gamma}(0) >0 \Rightarrow \hat{ \Gamma} _p $ is not singular so 
+Y-W equations have a unique solution.
+
+\begin{remark}
+$ \hat{\gamma} $ are asymptotically normal and consistent, so unsurprisingly one can prove the same for $ \hat{\phi} $ .
+
+In practice there are efficient algorithms to solve Y-W equations.
+\end{remark}
+
+
+\begin{example}
+$ X_t = \phi X_{t-1} + Z_t, | \phi | < 1 $
+\[ \hat{\gamma}(0)  \hat{\phi} = \hat{\gamma}(1· \Rightarrow \hat{\phi} = \frac{\hat{\gamma}(1)}{ \hat{\gamma}(0)} = \hat{\rho}(1) . \]
+\[ \hat{ \sigma} ^2(0) = \hat{\gamma}(0)  - \frac{ \hat{\gamma}(1) \hat{\gamma}(1)}{\hat{\gamma}(0) \hat{\gamma}(0)} \hat{\gamma}(0) = \hat{\gamma}(0) ( 1 - \hat{\rho}(1)^2) \]
+\end{example}
+
+
+\begin{exercise}
+Sho that estimators $ \hat{\sigma}^2 $ and $ \hat{\phi} $ are consistent in the previous example if 
+\[ (Z_t) \sim \Iid(0, \sigma^2) . \]
+\end{exercise}
+
+One can show if $  (Z_t) \sim \Iid(0, \sigma ^2) $  then
+\begin{align*} 
+\sqrt{n} \left( \left( \begin{array} {c} \hat{\phi}_1 \\ \vdots \\ \hat{\phi} _p \end{array} \right) - \left( \begin{array}{c} \phi _1 \\ \vdots \\ \phi _p \end{array} \right) \right) \overset{D}{\rightarrow } \No(0, \sigma^2 \Gamma_p ^{-1} ) , \\
+\hat{\sigma}^2 \overset{P}{\rightarrow} \sigma^2  .
+\end{align*}
+
+Therefore one can construct confidence intervals.
+
+
+\section{Gaussian Maximu Likelihood}
+
+We want to estimate $ \theta _1, \ldots , \theta _q, \phi _1, \ldots , \phi _p, \sigma z^2 $ in $ \Arma(p,q) $.
+
+\[ X_t = \sum \psi _j Z_{t-j} . \]
+Simplifying assumption:
+\begin{align*}
+ ((X_t) \text{ is gaussian, invertible and causal} \\
+(Z_t) \overset{I.I.D.}{\sim} \No(0, \sigma^2) .
+\end{align*}
+
+For a vector of observations and parameters 
+\begin{align*}
+\vec{X}_t  = \left( \begin{array}{c} X_1  \\ \vdots \\ X_t \end{array} \right) , \quad
+\vec{\phi} = \left( \begin{array}{c} \phi _1 \\ \vdots \\ \phi _p \end{array} \right) , \quad
+\vec{\theta } =  \left( \begin{array}{c} \theta _1 \\ \vdots \\ \theta _q \end{array} \right)  .
+\end{align*}
+
+We maximize likelihood with respect to $ (\vec{\phi}, \vec{\theta}, \sigma ^2 ) $ :
+\begin{align*}
+ L(\vec{\phi}, \vec{\theta}, \sigma ^2 & =  L( \Gamma _t ( \vec{\phi}, \vec{\theta}, \sigma z^2)) \\
+ & = (2 \pi)^{- \frac{t}{2}} \frac{1}{ \sqrt{|\Gamma_t| }} e^{- \frac{1}{2} \vec{X}^T _t \Gamma _t ^{-1} X_t  } .
+\end{align*}
+
+to find $ \hat{\vec{\phi}} , \hat{\vec{\theta}} , \hat{\sigma}^2 $, we use  % Missing Word
+optimization.
+
+this works even if data are not gaussian (Brockwell-Davies).
+
+One can show that for casually invertible gaussian $ \Arma $ process with $ \Iid $ noise 
+
+\[ 
+\sqrt{t} \left[
+\left( \begin{array}{c} \hat{\phi} _1 \\ \vdots \\  \hat{\phi} _p \\ \hat{\theta} _1 \\ \vdots \\ \hat{\theta} _q \end{array} \right)
+- \left( \begin{array}{c} \phi _1 \\ \vdots \\ \phi _p \\ \theta _1 \\ \vdots \\ \theta _q \end{array} \right) \right] 
+\overset{D}{\rightarrow} \No(0, W ) , \]
+where $ W $ is something very complex.
+
+If $( X_t) $ is weakly stationary with mean zero, then $ (X_t) $ is 
+essentially a causal linear process and a deterministic sequence.
+
+\begin{align*}
+ M_n = \Span(X_i : i = - \infty, \ldots , n ) \\
+ \sigma ^2 = \E[ X_{n+1} - \Pi_{M_n} X_{n+1})^2 ] 
+\end{align*}
+
+\New{Wold decomposition} theorem says that if $ \sigma ^2 > 0 $, then
+$ X_t = \sum _{j=0} ^{\infty} \psi _j Z_{t-j} + V-t $ where $ (Z_t ) \sim \Wn(0, \sigma ^2) $ and 
+$ (V_t) $ is deterministic sequence.
+
+
+
+
+\section{Model selection}
+
+How to choose $ p, $ an $ q $ =
+
+\New{Akaike information criterion}
+
+\begin{enumerate}
+\item $ \Aic $
+\[ \Aic = - 2 (\max) \Loglikelihood +  \underbrace{2 \cdot K}_{ \text{ penalty} } , \]
+where $ K = (p+q + 1) = \#\text{ of parameters} $, (penalty = you pay $ 2 \epsilon $ for every extra parameter).
+
+Select $ p, q $ , which give minimal $ \Aic $ (has tendency to overfit).
+
+\item  $ \Aicc $ (corrected $\Aic $) 
+\[ \Aicc = - 2(\max) \Loglikelihood + 2K \cdot \frac{n}{n - k + 1} , \]
+$ n = \text{sample size} $.
+
+\item \New{Bayesian information criteria} ( $ \Bic$ )
+
+\[ \Bic = 2 (\max)\Loglikelihood + K \cdot \log(n) , \]
+this is consistent criterion ( $ \Aic $ is only asymptotically efficient).
+
+\end{enumerate}
+
+\begin{remark}
+Software packages in R procedures, books differ in 
+definition of this criteria.
+
+{\bf R : }
+
+ar has minimal $ \Aic $ always equal to $ 0 $., looking at residuals after
+fitting allows us to detect goodness of fit.
+\begin{itemize}
+\item[ \it ar ] selects $ p, q $.
+\item[ \it arma and arima ] you have to give $ p, q $
+\item[\it qqnorm] compares data to normal distribution.
+\item[ \it arima plot ] we can use diag which plots residuals over time
+\end{itemize}
+
+\end{remark}
+
+
+\section{ Forecasting $\Arma $ models }
+
+We want to find best linear predictor for $ X_{n+1} $ in terms of
+$ X_1, X_2, \ldots , X_n : $
+\[ X_n+1 = \phi_1 X_n +  \ldots \phi _n X_1 , \]
+\Important{ we know $ \phi _{n-1,1}, \ldots , \phi_{n-1, n-1} $} .
+Prediction equations
+\[ \Gamma _n \vec{\phi} _n = \left( \begin{array}{c} \gamma(1) \\ \vdots \\ \gamma(n) \end{array} \right), \]
+where
+\[ \vec{\phi}_n = \left( \begin{array}{c} \phi _1 \\ \vdots \\ \phi _n \end{array} \right) . \]
+
+\New{ Mean Squared Error} 
+\[ \E \left[ (X_{n+1} - \Pi _n X_{n+1} )^2  \right] = \gamma_X(0) - \left< \vec{\phi }_n ,  \left( \begin{array}{c} \gamma(1) \\ \vdots \\
+\gamma(n) \end{array} \right) \right> := v_n . \]
+
+Recall $ \gamma (0) >0 , \gamma(h) \to 0  \; \Rightarrow \Gamma _n $ are 
+regular $ (X_t) $ is stationary, with mean zero and stationary. If this holds
+ $ \phi _i $ -s can be calculated recursively.
+
+\New{ Dorbin - Levinson algorithm}
+The coefficient $ \phi _{n,j}, j=1, \ldots , n, n=1, \ldots ,$ can be computed as follows
+\[ v_0 = \gamma(0) , \]
+for n in $ 1:N $ 
+\begin{align*}
+\left( \begin{array}{c} \phi _{n,1} \vdots \\ \phi _{n, n} \end{array} \right) = 
+\left( \begin{array}{c} \phi _{n-1, 1} \\ \vdots\\ \phi _{n-1, n-1} \end{array} \right) - 
+\phi _{n,n} \left( \begin{array}{c} \phi_{n-1, n-1} \\ \vdots \\ \phi _{n-1, 1} \end{array} \right) \\
+v_n = v_{n-1} (1 - \phi _{n n})^2  
+.
+\end{align*}
+
+Dorbin-Levinson algorithm is used to get
+\begin{itemize}
+\item  best linear predictors,
+\item $ \Pacf $ ,
+\item find Yule-Walker estimators.
+\end{itemize}
+
+
+For general $\Arma(p,q) $ processes, it is more reasonable to predict $ X_{n+1} $ in terms of \New{innovations}.
+\begin{align*}
+\hat{X} _1 = 1, \hat{X}_n = \Pi_{n-1} X_n : \; X_n - \hat{X} _n , \; n =1 , \ldots, N.  \\
+\span\{X_1 - \hat{X}_1 , \ldots , X_n - \hat{X}_n \} = \Span\{X_1, \ldots , X_n \} , 
+\end{align*}
+but innovations are mutually orthogonal and we can write
+\[ \hat{X} _{n+1} = \Pi _n X_{n+1} = \theta _{n,1} (X_n - \hat{X} _n) + \ldots + \theta_{n,n} (X_1 - \hat{X}_1 ). \]
+One can find $ \theta _{n,j} $ -s recursively.
+
+\New{Innovations algorithm}
+
+Assume $ (X_t) $ is weakly stationary, with mean zero, such that  \ref{eq:star} holds. Then coefficient 
+$ \theta _{n,j} $ can be computed as follows
+\[ v_0 = \gamma(0), \]
+for $ n=1:N $ .
+\begin{align*}
+ \theta_{n, n-k} = \frac{1}{v_k} \left( \gamma(n-k) - \sum _{j=0} ^{k-1} \theta_{k,k-j} \theta_{n, n-j} \cdot v_j \right) \\
+v_n = \gamma(0) - \sum _{j=0} ^{n-1} \theta_{n,n-j} ^2 v_j .
+\end{align*}
+
+
+Assume $ (X_t) $ is causal $ \Arma(p,q) $  such that:
+\begin{align*}
+\phi (B) X_t = \theta(B) Z_t , \; Z_t \sim \Wn(0, \sigma ^2) \\
+\hat{X}_{n+1} = \Pi _n X_{n+1} , \\
+v_n = \E\left[ \left( X_{n+1} - \hat{X} _{n+1} \right)^2 \right] = - \sigma ^2 \sqrt{n}  \\
+X_t = \phi _1 X_{t-1} - \ldots  - \phi _p X_{t-p} + Z_t + \ldots + Z_t +  \theta _1 X_{t-1} + \ldots + \theta _q Z_{t-q }
+\end{align*}
+
+\New{Linear prediction of  $\Arma(p,q) $ processes}
+
+\begin{proposition}
+For causal $ \Arma(p,q) $ and $ m = \max(p,q) $.
+\begin{align*} \hat{X}_{n+1} \\ = 
+ \begin{cases} 
+\sum_{j=1}^n \theta_{n,j} (X_{n+1-j} - \hat{X}_{n+1-j} ) , & q \leq n <m \\
+\phi X_n + \ldots + \phi _p X_{n+1-p} + \sum _{j=1}^q \theta_{n,j}\left( x_{n+1-j} - \hat{X}_{n+1-j} \right) , & n \geq m 
+\end{cases}
+\end{align*}
+
+If $ (X_t) $ is also invertible
+ \begin{align*}
+\theta_{n,j} \to \theta _j, & \text{ as } n \to \infty \\
+\sqrt{n} \to 1 , & \text{ as } n \to \infty 
+\end{align*}
+\label{prop:6}
+\end{proposition}
+
+Proposition \ref{prop6} says $ \hat{X} _{n+1} $ can be calculated by rewriting $ \Arma $ equations using 
+innovations instead of the noise
+and prediction error is asymptotically optimal.
+
+If $ p= 0 $  $(X_t) \sim \Ma(q) , $ innovation algorithm can be used to
+obtain estimates of  $ \theta_j$ -s (of course using $ \hat{\gamma} $ instead of $ \gamma $ ),
+thus asymptotically normal under technical conditions!
+( $ g_n \to \infty , g_n/n \to 0 $)
+
+
+\section{ Prediction intervals}
+
+Assume  $ X_1, X_2, z\ldots X_n, X_{n+1}, \ldots , X_{n+h} $ is gaussian vector with mean zero.
+\[ \Pi_n X_{n+h} = \E[ X_{n+h} | X_1, \ldots , X_n ] , \]
+best linear predictor is also the best predictor.
+
+Prediction
+\[ X_{n+h} - \Pi _n X_{n+h} , \]
+ 
+is also $ \No(0, \sigma^2(h)) $,
+\[ h=1, \; v_n = \sigma^2(1) . \]
+
+$(1- \alpha) $ prediction interval
+\[ \Pi _n X_{n+h} \pm Z_{\alpha/2} \sigma_n(h)  . \]
+
+In practice we do not know $ \gamma $ -s or $ \phi $ -s or $ \theta $ -s or $ \theta_{n,j} $ -s,
+so they have to be estimated.
+
+Forecast is obtained if substitute these values by $ \hat{\gamma}, \hat{\phi}, \hat{\theta}$ -s.
+Then prediction interval does not take into account
+\begin{itemize}
+\item parameter of uncertainty,
+\item model uncertainty,
+\item gaussianity might not hold,
+\item there is also uncertainty about trend and seasonality,
+\item prediction errors are controlled only pointwise.
+\end{itemize}
+
+ 
+\section{ Nonstationary models}
+
+For $ d \in \N _0 , (X_t) $ is called  \New{$ \Arima(p,d, q) $ process} if 
+\[ Y_t = (1-B)^{d} X_t , \]
+where $ (X_t) $ is causal $ \Arma(p,q) $ process.
+Thus it satisfies
+\[ \phi(B) (1- B)^d X_t = \theta(B) Z_t , \]
+where $ Z_t \sim \Wn(0,  \sigma^2) $, $ \phi, \theta $ polynomials and $ \phi (z) \neq 0 $ for 
+$ |z| \leq 1 $.
+\[ X_t  \text{ is stationary } \iff d = 0! \]
+
+For $ d=1 , Y_t = X_t - X_{t-1} $.
+Therefore 
+\[ X_t = X_0 + Y_1 + Y_2 + \ldots + Y_t ,  \; Y_t \sim \Arma(p,q)  , \]
+
+e.g. $ \Arima(1,1, 0) $, then 
+\[ Y_t = \phi Y_{t-1} + Z_t = \sum _{j=0}^{\infty} \phi ^j Z_{t-j} . \]
+
+$ \Arima $ processes (for $ d \geq 1 $ ) are characterized by slow
+decay of acf.
+
+Note polynomial $ \phi(z) (1- z)^d $ has root $ z= 1 $, so one can
+test for this using so called unit root tests.
+
+There are $ \Sarima $ (seas.) , $ \Farima $ (long range dependent),
+$ \Inar, \ldots $.
+
+
+\chapter{Nonlinear models}
+
+\begin{itemize}
+\item In finance: econometrics
+\item in climate: 
+\[ X_t = X_0 e^{X_1 + \ldots + X_t } . \]
+\item integer valued time series.
+\end{itemize}
+
+\New{ $ \Garch $ and related }
+
+\[ X_t = \log \frac{S_t}{S_{t-1}} , \]
+there are "stylized facts".
+\begin{enumerate}
+\item $ \Acf $ is approximately $ 0 $ at all lags $ h \geq 1 $
+\item $ \Acf $ of $ |X_t | $ of $ X_t ^2 $ decays slowly.
+\item extremes are very large (with respect to Gaussian distrib.) and come in clusters.
+\end{enumerate}
+
+$ \Ar(p) , \Ma(q) $ cannot model this.
+
+\New{ $ \Arch $ } model ( Engle 1982 )
+\[ Z_t \sim \Iid(0, 1) , \]
+typically  $ \No(0,1) $. $ \alpha _0, \alpha _1 > 0 $. We look for stationary solution $ \neq 0 $ 
+\begin{align*}
+X_t = \sigma _t Z_t \\
+\text{ volatility } \sigma _t ^2 = \alpha _0 + \alpha_1 X_{t-1}^2 
+.
+\end{align*}
+
+Stationary solution exists for other $ \alpha _1 $ -s. They solve the above equations. 
+This solution is strongly stationary and \Important{nonanticipativew} i.e.
+\[ \sigma_t \in \sigma\{ Z_{t-1}, Z_{t-2}, \ldots \} . \]
+\[ X_t = \sigma_t Z_t \in \sigma \{ Z_t , Z_{t-1}, Z_{t-2}, \ldots \} , \]
+so $ X_t $ is independent of $ \sigma \{ Z_{t+1}, Z_{t+2}, \ldots \}  . $. 
+
+Assume $ ( \sigma _t, X_t ) $ is nonanticipative solution of equations \ref{eq:51}., 
+if $ \E[\sigma _t^2] < \infty \Rightarrow \E[X_t]  = \E[ \sigma_t Z_t ] = 0 . $
+( $ \E[ \sigma_t^2 ] = \alpha _0 + \alpha_1 \E[   \sigma_t^2] $).
+( $h \geq 1 $)
+\[ \gamma _X(h) = \E[X_t X_{t+h} ] = \E[ \underbrace{X_t \sigma_{t+h} Z_{t+h} } _{\text{independence }}] = 0 , \]
+
+\[ \E[X_t^2 | X_{t-1}, X_{t-2}, \ldots ] = \E[ \sigma_t^2 Z_t^2 | X_{t-1}, \ldots] = \sigma_t^2 \E[Z_t^2] = \sigma_t^2 , \]
+since $ Z_t, X_{t-j} $ are independent ... conditional heteroscedastic.
+
+$ \Arch(p) $ model
+\[ Z_t \sim \Iid(0, 1) , \]
+typically $ \No(0,1) $. 
+$  \alpha_0 , \alpha _1, \ldots , \alpha_p > 0 $.
+
+Look for stationary solution $ \neq 0 $.
+\begin{align*}
+ X_t = \sigma_t Z_t , \\
+\sigma_t^2 = \alpha _0 + \alpha_1 X_{t-1}^2 + \ldots + \alpha_p X_{t-1} ^2 , \\
+\phi(z) = 1 - \sum_{i=1}^p \alpha_i z^i .
+\end{align*}
+Therefore we get
+\[ \phi(B) X_t^2 = \underbrace{ \left( Z_t^2 -1\right) \sigma_t^2 }_{\nu_t} + \alpha_0 . \]
+
+If $( \sigma _t, X_t) $ are stationary solution  and nonanticipative of \ref{eq:5w} and
+if 
+\[  \E[ \sigma_t^4] < \infty, \; \E[Z^4] < \infty \Rightarrow \nu _t , \]
+are white noise.
+\begin{align*}
+\E[ \nu_t] = \E\left[ \left( Z_t^2 - 1 \right) \sigma_t^2 \right] = 0 \\
+\E[ \nu_t \nu_{t+h} ] = 0,
+\end{align*}
+similarly for large $ p$.
+
+$\Garch(p,q) $ (Boleslev 1986)
+
+\[ Z_t \sim \Iid(0,1) , \]
+$ \alpha_0, \alpha_p, \beta_q >0 $ and $ \alpha_1, \ldots , \alpha_{p-1}, \beta_1, \ldots , \beta_{q-1} \geq 0 $. 
+We look for stationary solution $ \neq 0 $
+\begin{align*}
+X_t = \sigma_t Z_t \\
+\sigma_t ^2 = \alpha_0 + \sum _{i=1}^p \alpha_i X_{t-i}^2 + \sum_{j=1}^q \beta_j \sigma_{t-j}^2 .
+\end{align*}
+
+\begin{remark}
+$ \Garch(p,q) $ provides reasonable model for relatively small $ p $ and $ q $.
+There exists estimation and prediction theory, which is related to $ \Arma $.
+\end{remark}
+
+{\bf Questions: }
+\begin{itemize}
+\item when do we have stationary solution to \ref{eq:53}. ?
+\item can you describe its distribution ?
+\item how to estimate and predict?
+\end{itemize}
+
+\begin{example} $ \Garch(1,1) $ 
+\[ \sigma_t^2 = \alpha_0 + \alpha_1 X_{t-1}^2 + \beta_1 \sigma_{t-1}^2  \\
+= \alpha_0 + \sigma_{t-1}^2 \underbrace{(\alpha_1 Z_{t-1}^2 + \beta_1) }_{ A_t} . \]
+(stochastic recurrence equation)
+
+\begin{align*}
+ X_t ^2 - \sigma_t^2 = \sigma_t ^2( Z_t^2 - 1) = \nu_t \\
+- \beta_1(X_{t-1}^2 - \sigma_{t-1}^2) = \beta_1 \nu_{t-1} \\
+X_t^2 - \beta_1 X_{t-1}^2 -  \underbrace{ ( \sigma_t^2 - \beta_1 \sigma_{t-1}^2)}_{ \alpha_0 + \alpha_1 X_{t-1}^2} = \nu_t - \beta_1 + \nu_{t-1} 
+\end{align*}
+
+
+\[ X_t^2 - (\alpha_1 + \beta_1) X_{t-1}^2 = \alpha_0 + \underbrace{ \nu_t - \beta_1 \nu_{t-1} }_{\Ma() \text{ process}} , \]
+if $ \E[\sigma_t^2], \E[Z^4] < \infty \Rightarrow \nu _t $ is white noise.
+\end{example}
+
+\section{Gaussian quasi-max likelihood }
+
+Assume $ X_1, \ldots , X_n $ form a stationary $ \Garch(p,q) $ model. Density of the data
+\begin{align*}
+ f_{X_1, \ldots, X_n}(x_1, \ldots , x_n) =  \underbrace{ f_{X_1, \ldots , X_p}(x_1, \ldots , x_p)}_{\text{ we forget this }  } \\
+\underbrace{\prod_{t=p+1}^n f_{X|X_1, \ldots , X_{t-1}}(x_t | x_1, \ldots , x_{t-1} ) }_{\text{we optimize this}} \label{eq:54} , \end{align*}
+assume $ Z_t \overset{i.i.d.}{\sim} \No(0, 1) $ all conditional densities in \ref{eq:54} are
+normal.
+
+\begin{remark}
+These estimators are asymptotically normal with rate $ \sqrt{n} $. (using numerical optimization)
+
+More realistic assumption on $ Z_i$ -s can give non-consistent estimators!
+\end{remark}
+
+
+
+\section{ Stochastic Volatility Models}
+Let $ Z_t \sim \Iid $ , with distribution function $ F $.
+
+$ (\sigma_t^2) $ nonnegative stationary process independent of $ (Z_t) $.
+\[ X_t = \sigma_t Z_t . \]
+
+Typical choice is 
+\[
+\sigma_t = e^{Y_t} , \; Y_t = \sum_{j=0}^{\infty} \psi _j \nu _{t-j}  \; \text{ (causal linear process) } ,
+\]
+$ \eta _t \sim \Iid $, if $ \eta \overset{iid}{\sim} \No(0, \sigma^2) , \E[ \psi^2] < \infty \Rightarrow Y_t $ are normal
+\begin{align*}
+\eta_t \sim \Iid, \\
+\end{align*}
+therefore $ \sigma_t $ are lognormal and $ (X_t) $ is well defined.
+
+In both families ( $ \Garch $ and $ \Sv $) we can also add
+nonzero mean.
+\[ X_t' = X_t + \mu, \; \mu \in \R , \]
+where $ (X_t) $ is $ \Garch $ or $ \Sv $ process.
+
+
+\section{Stochastic recurrence equation}
+
+$ \Garch(1,1) $ can be written in terms of $ S.R.E $ i.e. in the form 
+\[ Y_t = A_t Y_{t-1} + B_t , \]
+$ (A_t, B_t) \overset{iid}{\sim} $ random vectors.
+
+Question: when \ref{eq:55} has a stationary solution. Iterate backward
+\[ Y_t = A_t \cdot \ldots \cdot A_{t-k} Y_{t-k-1} + \sum _{i=t-k}^t A_t \cdot \ldots \cdot A_{it+1}B_i . \]
+We guess that the solution is of the form:
+\[ Y_t = \sum _{i = - \infty}^{\infty} A_t \cdot \ldots \cdot A_{i + 1} B_i  . \label{eq:56} \]
+
+If \ref{eq:56} converges a.s. it satisfies eq. \ref{eq:55} moreover and it is 
+non-anticipative! 
+
+
+\begin{theorem} Assume $ (A_t, B_t) $ form an iid sequence, such that $ A_t, B_t > 0,$
+\begin{align*} 
+- \infty \leq \E[ \log(A)] < 0 \\
+\E[ |\log B_1|] < \infty .
+\end{align*}
+Then series in \ref{eq:56} converges a.s. and represents a stationary solution to \ref{eq:55} .
+\end{theorem}
+\proof HW, 
+\\
+Idea: $ Y_t = \sum_{i = - \infty}^t A_t \cdot \ldots \cdot A_{i+1} B_i . $ % Add (there is more hing than that)
+\endproof
+
+
+\begin{example}  $ \Arch(1) $
+
+\[ \sigma_t ^2 = \alpha_0 + \alpha_1 Z_{t-1}^2 \sigma_{t-1}^2 .\]
+
+\begin{align*}
+ \E[ \log A] = 0 \equiv \E[\log(\alpha_1 Z_t^2)] < \infty \\
+\equiv \alpha_1 < e^{ - \E[\log Z_1^2] }  ,
+\end{align*}
+If $ Z_i \overset{iid}{\sim} \No(0,1) $
+\[ - \E[\log Z_1^2] = \gamma + \log 2 , \]
+where $ \gamma $ is Euler's constant.
+
+So $ \alpha _1 < 2 e^{\gamma} \approx 3.56 $, so $ \alpha_1 > 3.56 $, there is no stationary $ \Arch $ with normal noise!
+
+\end{example}
+
+
+\begin{example} $ \Garch(1,1) $
+
+\[ \sigma^2 = \underbrace{ (\alpha_1 Z_{t-1}^2 + \beta_1)}_{A_t}  \sigma_{t-1}^2 \alpha_0 , \]
+sufficient but not needed. 
+
+\[ \E \log(\alpha_1 Z_t^2 + \beta_1)]  \overset{Jense}{\leq} \log(\alpha_1 + \beta_1 < 0 . \]
+
+
+\section{ Properties of Stationary Solution}
+
+For $ \Garch(1,1) $ , if $ \alpha _1 + \beta _1 <1 $
+\begin{align*}
+ \sigma _t ^2 = \alpha_0 + \alpha_0 \sum_{i=1}^{\infty}(\alpha_1 + \beta_1)^j < \infty \\
+= \frac{\alpha_0}{1 - (\alpha_1 + \beta_1)} < \infty . 
+\end{align*}
+therefore $ \E[X_t^2 ] = \E[\sigma_t^2 Z_t^2] = \frac{\alpha_0}{1- (\alpha_1 + \beta_1)} < \infty . $
+therefore $ (X_t) $ is weakly and strongly stationary if $ \alpha_1 + \beta_1 < 1 $.
+
+Solution $ \alpha_1 + \beta_1 \geq 1 $ but then we can't have weak stationarity.
+
+\section{Tails Of Stationary Solutions To S.R.E}
+
+\[ Y_t = A_t Y_{t-1} + B_t, \]
+$(A_t, B_t) $ i.i.d. Assume $ A_t, B_t > 0 $ and $ A_t $ have density 
+\[ f(t) \sim g(t) , \; \frac{f(t)}{g(t)} \overset{t \to \infty}{\rightarrow } 1 . \]
+\end{example}
+
+
+\begin{theorem}
+Assume $ \mathcal{K} > 0 , \epsilon > 0 $ such that 
+\[ \E[A^{\mathcal{K}}] =1, \quad \E[ B^{\mathcal{K} \epsilon} ] < \infty, \quad \E[ A^{\mathcal{K}} \log A] < \infty \]
+$ \Rightarrow $  then \ref{eq:55}  has stationary solution and 
+\[ P(Y> u) \sim c u^{- \mathcal{K}} , \]
+for $ u \to \infty $ power - law tail.
+\end{theorem}
+
+For $ Z \sim \No(0,1) $ :
+\[ P(Z > u) \sim \frac{1}{u} e^{-u^2 /2} , \]
+$ \searrow 0 $ supercop.fast.
+
+Then $ 2 $ applied on $ P( \sigma_t^2  > u \sim c u ^{-\mathcal{K}} $.
+\[ X_t = \sigma_t Z_t, \]
+$ Z_t  $ is symmetric, where $ \E[ (\alpha_1 Z^2 + \beta_1)^{\mathcal{K}} ] =1 $.
+\[ \Rightarrow \ldots \Rightarrow P(X_t >u) \sim \frac{1}{2} c u ^{-2 \mathcal{K}} \]
+$ (Z) \Rightarrow \E[ Y^{\mathcal{K} + \delta} ] =  + \infty , \forall \delta > 0 $
+If $ \mathcal{K}  < 2 $ we don't have variance.
+
+If $ \mathcal{K} < 1 $ then $ (Y_t) $ do not have expectation.
+
+\section{ Prediction for $ \Garch $ models}
+
+If we know distribution of $ Z_t $ -s
+\[ \sigma_{t+1}^2 = \alpha_0 + \alpha_1 X_{t-1}^2 + \ldots + \beta_q \sigma_{t+q}^2 . \]
+$ \Rightarrow X_t | X_{t-1} $ has known distribution ( $ X_t  = \sigma_t Z_t $)
+
+For $ Z_t \sim N(0,1) $ , if we estimate $ \hat{\alpha}_0, \hat{\alpha}_1, \ldots, \hat{\beta}_q $ prediction interval
+for $ X_{t+1} $ is\[ \pm 1.96 \hat{\sigma}_{t+1} , \\
+\hat{\sigma}_{t+1}^2 = \hat{\alpha}_0 + \hat{\alpha}_1 X_{t-1}^2 + \ldots + \hat{\beta}_q \hat{\sigma}_{t+1-q}^2 . \]
+
+
+library(fGarch)
+instead in library tsa use garch
+
+residuals aren't normal, then prediction interval for $ X_{t+1} $ should be 
+\[ \pm q \_{\alpha/2} \hat{\sigma}_{t+1} \]
+Instead of $ 1.96$.
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document} 
