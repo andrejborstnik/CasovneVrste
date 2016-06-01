@@ -58,20 +58,25 @@ numbered=no
 \newcommand{\hlc}[2][yellow]{ {\sethlcolor{#1} \hl{#2}} }
 \newcommand{\hlcr}[1]{\hlc[lightred]{#1}}
 
+
+
 % ukazi za matematicna okolja
-\theoremstyle{definition} % tekst napisan pokoncnow
-\newtheorem{definition}{Definition}[section]
-\newtheorem{example}[definition]{Example}
-\newtheorem{exercise}[definition]{Exercise}
-\newtheorem{observation}[definition]{Observation}
-\newtheorem{remark}[definition]{Remark}
+\newtheorem{justCounting}{JC}[chapter]
+
+\theoremstyle{definition} % tekst napisan pokoncno
+
+\newtheorem{example}{Example}[chapter]
+\newtheorem{exercise}{Exercise}[chapter]
+\newtheorem*{observation}{Observation}
+\newtheorem*{remark}{Remark}
 
 
 \theoremstyle{plain} % tekst napisan posevno
-\newtheorem{lemma}[definition]{Lemma}
-\newtheorem{theorem}[definition]{Theorem}
-\newtheorem{claim}[definition]{Claim}
-\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{definition}{Lemma}[chapter]
+\newtheorem{lemma}{Lemma}[chapter]
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}[justCounting]{Claim}
+\newtheorem{proposition}[justCounting]{Proposition}
 
 
 
@@ -275,9 +280,9 @@ A weakly stationary time series $(X_t)$ is called  \New{ white noise } if $\E [X
 $$\gamma_X(h) =  \begin{cases} \sigma^2 ( = \Var(X_t)) & ,h = 0 \\
 			0 & , h \neq 0 \end{cases}
 $$
-We write $(X_t) \sim WN(0, \sigma^2)$.
+We write $(X_t) \sim \Wn(0, \sigma^2)$.
 
-Clearly if $(X_t)$ i.i.d. and $ \E [X_t] = 0$ and $ \Var (X_t) < \infty \Rightarrow (X_t) \sim WN(0, \sigma^2)$.  
+Clearly if $(X_t)$ i.i.d. and $ \E [X_t] = 0$ and $ \Var (X_t) < \infty \Rightarrow (X_t) \sim \Wn(0, \sigma^2)$.  
 \end{example}
 
 
@@ -340,7 +345,7 @@ $A_1 = A\cos{\theta}$ and $A_2 = A\sin{ - \theta}$.
 \end{hint}
 
 \begin{example} (MA(1))
-Assume $(Z_t) \sim WN(0, \sigma^2), \theta \in \R$
+Assume $(Z_t) \sim \Wn(0, \sigma^2), \theta \in \R$
 and 
 \[ X_t = Z_t + \theta Z_{t-1},  t \in \Z. \]
 Process $(X_t)$ is called \New{ moving average of order one} $= MA(1)$ .
@@ -365,7 +370,7 @@ Time series theory makes a distinction between:
 
 
 \begin{example} ($\Ar(1)$)
-Assume $(Z_t) \sim WN(0, \sigma^2)$, $\phi \in \R$ and that $(X_t)$ satisfies 
+Assume $(Z_t) \sim \Wn(0, \sigma^2)$, $\phi \in \R$ and that $(X_t)$ satisfies 
 \[  X_t = \phi X_{t-1} +Z_t, t \in \Z .  \label{eq:1} .\] 
 
 
@@ -773,7 +778,7 @@ So linear process is an absolutely summable linear filter acting on white noise.
 
 
 \begin{example}(MA(1))
-\[ X_t = Z_t + \theta  Z_{t-1} ,  \quad Z_t \sim WN(0, \sigma ^2) . \]
+\[ X_t = Z_t + \theta  Z_{t-1} ,  \quad Z_t \sim \Wn(0, \sigma ^2) . \]
 \end{example}
 
 
@@ -857,7 +862,7 @@ Since the last equality does not depend on $ t $ the time series $ (X_t) $ is we
 
 
 \begin{exercise}
-Say $Z_t \sim WN(0, \sigma^2 )$. For convergence of series $\sum_k h_k Z_{t-k}$ it is sufficient that $\sum h_j^2 < \infty$.
+Say $Z_t \sim \Wn(0, \sigma^2 )$. For convergence of series $\sum_k h_k Z_{t-k}$ it is sufficient that $\sum h_j^2 < \infty$.
 \end{exercise}
 \begin{hint}
  Use Hilbert space theory to prove it)
@@ -869,7 +874,7 @@ A linear process
 \[ X_t = \sum:k h_k Z_{t-k}\]  is \New{ causal} (with respect to white noise $(Z_k)$) if $h_k = 0$ for $k < 0$. 
 
 \begin{example}
-For $|\phi| < 1 , (Z_t) \sim WN(0,1)$ the series 
+For $|\phi| < 1 , (Z_t) \sim \Wn(0,1)$ the series 
 \[ X_t = \sum_{j=0}^\infty \phi^j Z_{t-j} , \]
  is well defined and solves the $\Ar(1)$ equation. Moreover $(X_t)$ is causal. 
 \end{example}
@@ -1297,7 +1302,7 @@ which satisfy
 \end{exercise}
 
 \begin{example} ($\Ar(1)$ process)
-For $(Z_t) \sim WN(0, \sigma^2)$ suppose a stationary sequence $(X_t)$ satisfies
+For $(Z_t) \sim \Wn(0, \sigma^2)$ suppose a stationary sequence $(X_t)$ satisfies
 \[ X_t = \varphi X_{t-1}, t\in \Z, |\varphi| < 1, \]  then
 \[ X_t = \sum_{i = 0}^\infty \varphi^i Z_t , \]  and
 $Z_{n+1} \perp X_j, j=1,\dots,n$ (because $Z_{n+1} \perp Z_j, j\leq n$ and the scalar product is continuous).
@@ -1460,8 +1465,8 @@ implies
 
 This is important because of duality:
 
-\begin{example} (MA(1))
-Assume $Z_t \sim WN(0, \sigma^2),$ 
+\begin{example} ($\Ma(1)$)
+Assume $Z_t \sim \Wn(0, \sigma^2),$ 
 \[  X_t = Z_t + \theta Z_{t-1}. \]
 Then 
 \[ \rho_X(h) = \begin{cases} \frac{v}{1+v^2} , &   h = 1 , \\ 0 , & \text{otherwise} . \end{cases} \]
@@ -1520,7 +1525,7 @@ Variance of the series if nothing but the integral of the spectral density:
 
 \begin{example}
 \begin{enumerate}
-\item $Z_t \sim WN(0, \sigma^2)$, 
+\item $Z_t \sim \Wn(0, \sigma^2)$, 
 \[ \gamma_Z(h) = \begin{cases} \sigma^2, & h = 0 \\ 0, & \text{otherwise} \end{cases} . \]
  One can directly show the spectral density exists. 
 \[ f_Z(h) = \frac{\sigma^2}{2 \pi}, \]
@@ -1857,7 +1862,7 @@ $(\overline{X}_n +- \sqrt{\frac{v}{n}}Z_{\alpha/2})$.
 \end{example}
 
 \begin{definition}
-Assume $Z_t \sim WN$, $\theta_i$ are real numbers and 
+Assume $Z_t \sim \Wn$, $\theta_i$ are real numbers and 
 \[ X_t = Z_t + \theta_1 T_{t-1} + \dots + \theta_q + Z_{t-q}. \]
  We ask $\theta_q \neq 0$. This is MA(q).
 \end{definition}
@@ -2014,7 +2019,7 @@ parameter type = "Ljung" $->$ Ljung test
 Weakly stationary time series $ (X:t) $ is called \New{$ \Arma(p,q)$} (auto regressive moving average) process, if it 
 satisfies 
 \[ X_t - \phi _1 X_{t-1} - \ldots \phi _p X_{t-p} = Z_t + \theta _1 Z_{t-1} + \ldots + \theta _q Z_{t-q}  , \label{eq:41} \]
-for some real numbers $ \phi _1, \ldots , \phi _p, \theta _1, \ldots \theta _q $ and $ (Z_t) \sim WN(0, \sigma ^2) $. 
+for some real numbers $ \phi _1, \ldots , \phi _p, \theta _1, \ldots \theta _q $ and $ (Z_t) \sim \Wn(0, \sigma ^2) $. 
 $ \phi _i$ -s and $ \theta _i $ -s are called parameters of the model.
 \end{definition}
 
